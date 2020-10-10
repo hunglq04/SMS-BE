@@ -1,1 +1,1 @@
-web: java -jar build/libs/be-0.0.1-SNAPSHOT.jar
+web: java -jar target/be-0.0.1-SNAPSHOT.jar
