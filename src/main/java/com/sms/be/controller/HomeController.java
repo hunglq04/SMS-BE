@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
-
 //TODO remove this test and
 @CrossOrigin(origins = {"http://localhost:4200", "https://sms-fe.web.app", "https://sms-fe.firebaseapp.com"})
 @RestController
