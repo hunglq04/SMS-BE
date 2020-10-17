@@ -1,6 +1,7 @@
 package com.sms.be.repository;
 
 import com.sms.be.model.Account;
+import com.sms.be.repository.base.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
