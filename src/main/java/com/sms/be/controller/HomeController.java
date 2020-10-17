@@ -36,7 +36,6 @@ public class HomeController {
         return ResponseEntity.ok(new LoginResponse(jwt));
     }
 
-    // Api /api/random yêu cầu phải xác thực mới có thể request
     @GetMapping("/random")
     public String randomStuff(){
         return "JWT Hợp lệ mới có thể thấy được message này";
