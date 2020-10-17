@@ -27,7 +27,7 @@ public class HomeController {
     public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getIdCard(),
+                        loginRequest.getUsername(),
                         loginRequest.getPassword()
                 )
         );
