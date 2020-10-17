@@ -1,4 +1,4 @@
-package com.sms.be.repository;
+package com.sms.be.repository.base;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
