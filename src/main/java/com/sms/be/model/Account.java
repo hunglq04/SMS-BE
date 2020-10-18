@@ -4,6 +4,7 @@ import com.sms.be.model.base.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.List;
@@ -17,7 +18,7 @@ public class Account extends BaseEntity {
     private String username;
     private String password;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "Account_Role",
             joinColumns = { @JoinColumn(name = "account_id") },
