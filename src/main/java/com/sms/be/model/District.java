@@ -4,8 +4,12 @@ import com.sms.be.model.base.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -21,5 +25,13 @@ public class District extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Province province;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "district")
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Ward> wards = Collections.emptyList();
+
+    public String getFullName() {
+        return this.prefix + " " + this.name;
+    }
 
 }

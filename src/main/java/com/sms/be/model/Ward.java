@@ -4,6 +4,7 @@ import com.sms.be.model.base.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 
@@ -24,5 +25,9 @@ public class Ward extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Province province;
+
+    public String getFullName() {
+        return this.prefix + " " + this.name;
+    }
 
 }
