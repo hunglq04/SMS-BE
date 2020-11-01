@@ -1,9 +1,9 @@
-package com.sms.be.service.core;
+package com.sms.be.repository.custom;
 
 import com.sms.be.dto.ManagerInfoDto;
 
 import java.util.List;
 
-public interface EmployeeService {
+public interface EmployeeRepositoryCustom {
     List<ManagerInfoDto> getAllManagerInfos();
 }
