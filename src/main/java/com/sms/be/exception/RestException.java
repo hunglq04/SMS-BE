@@ -3,7 +3,7 @@ package com.sms.be.exception;
 import com.sms.be.constant.ErrorMessage;
 import lombok.Getter;
 
-public class RestException extends Exception {
+public class RestException extends RuntimeException {
 
     @Getter
     private final ErrorMessage errorMessage;

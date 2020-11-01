@@ -19,9 +19,4 @@ public class Role extends BaseEntity {
     @Column
     private String description;
 
-    @Override
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ROLE_SEQ")
-    public Long getId() {
-        return super.getId();
-    }
 }

@@ -26,6 +26,9 @@ public class Employee extends BaseEntity {
     private String idCard;
 
     @Column
+    private String avatar;
+
+    @Column
     private Long salary;
 
     @Column

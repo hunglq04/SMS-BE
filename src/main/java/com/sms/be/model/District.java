@@ -1,5 +1,6 @@
 package com.sms.be.model;
 
+import com.sms.be.constant.CommonConstants;
 import com.sms.be.model.base.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,11 +28,12 @@ public class District extends BaseEntity {
     private Province province;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "district")
-    @Fetch(value = FetchMode.SUBSELECT)
+    @Fetch(FetchMode.SUBSELECT)
+    @OrderBy("PREFIX ASC, NAME ASC")
     private List<Ward> wards = Collections.emptyList();
 
     public String getFullName() {
-        return this.prefix + " " + this.name;
+        return this.prefix + CommonConstants.SPACE + this.name;
     }
 
 }

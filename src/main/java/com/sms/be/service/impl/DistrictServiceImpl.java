@@ -2,17 +2,15 @@ package com.sms.be.service.impl;
 
 import com.sms.be.dto.response.DistrictResponse;
 import com.sms.be.exception.ProvinceNotFoundException;
-import com.sms.be.model.District;
 import com.sms.be.model.Province;
 import com.sms.be.repository.DistrictRepository;
 import com.sms.be.repository.ProvinceRepository;
 import com.sms.be.service.core.DistrictService;
-import com.sms.be.utils.Mapper;
+import com.sms.be.utils.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +30,7 @@ public class DistrictServiceImpl implements DistrictService {
         final Province province = provinceRepository.findById(provinceId)
                 .orElseThrow(ProvinceNotFoundException::new);
         return districtRepository.findByProvince(province).stream()
-                .map(Mapper::districtToDistrictResponse)
+                .map(MapperUtils::districtToDistrictResponse)
                 .collect(Collectors.toList());
     }
 }
