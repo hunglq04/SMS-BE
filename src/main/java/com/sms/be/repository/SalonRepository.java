@@ -5,5 +5,5 @@ import com.sms.be.repository.base.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SalonRepository extends BaseRepository<Salon, Long> {
+public interface SalonRepository extends BaseRepository<Salon, Long>, SalonRepositoryCustom {
 }

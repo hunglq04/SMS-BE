@@ -1,6 +1,7 @@
 package com.sms.be.service.impl;
 
 import com.sms.be.dto.request.SalonRequest;
+import com.sms.be.dto.response.SalonInternalResponse;
 import com.sms.be.exception.AddressNotFound;
 import com.sms.be.exception.EmployeeNotFound;
 import com.sms.be.model.Employee;
@@ -12,6 +13,7 @@ import com.sms.be.repository.WardRepository;
 import com.sms.be.service.core.SalonService;
 import com.sms.be.utils.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,5 +47,10 @@ public class SalonServiceImpl implements SalonService {
                 .image(salonRequest.getImageUrl())
                 .build();
         salonRepository.save(salon);
+    }
+
+    @Override
+    public Page<SalonInternalResponse> getSalonPage(int pageOffset, int pageSize) {
+        return salonRepository.getSalonPage(pageOffset, pageSize);
     }
 }

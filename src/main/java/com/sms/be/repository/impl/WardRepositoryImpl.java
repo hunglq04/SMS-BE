@@ -1,6 +1,5 @@
 package com.sms.be.repository.impl;
 
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.sms.be.model.QWard;
 import com.sms.be.model.Ward;
