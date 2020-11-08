@@ -7,8 +7,15 @@ import com.sms.be.repository.BookingRepository;
 import com.sms.be.repository.EmployeeRepository;
 import com.sms.be.service.core.EmployeeService;
 import org.springframework.beans.BeanUtils;
+import com.sms.be.dto.ManagerInfoDto;
+import com.sms.be.model.Employee;
+import com.sms.be.repository.EmployeeRepository;
+import com.sms.be.service.core.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +24,15 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(rollbackFor = Throwable.class)
 public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
-    EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
+    
 
     public List<Employee> findAll() {
         return employeeRepository.findAll();
@@ -50,5 +59,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return lstStylishResponse;
+    }
+
+    @Override
+    public List<ManagerInfoDto> getAllManagerInfos() {
+        return employeeRepository.getAllManagerInfos();
     }
 }
