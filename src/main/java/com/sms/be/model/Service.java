@@ -28,6 +28,15 @@ public class Service extends BaseEntity {
     @Column
     private String image;
 
+    @Column
+    private String bookingImage;
+
+    @Column
+    private String bookingRecommendImage;
+
+    @Column
+    private boolean isRecommend = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private ServiceType serviceType;
 

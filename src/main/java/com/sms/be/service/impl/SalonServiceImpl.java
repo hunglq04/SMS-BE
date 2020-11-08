@@ -1,21 +1,8 @@
 package com.sms.be.service.impl;
 
-import com.sms.be.dto.response.SalonResponse;
-import com.sms.be.model.District;
-import com.sms.be.model.Salon;
-import com.sms.be.repository.SalonRepository;
-import com.sms.be.service.core.SalonService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import com.sms.be.dto.request.SalonRequest;
 import com.sms.be.dto.response.SalonInternalResponse;
+import com.sms.be.dto.response.SalonResponse;
 import com.sms.be.exception.AddressNotFound;
 import com.sms.be.exception.EmployeeNotFound;
 import com.sms.be.model.Employee;
@@ -31,15 +18,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional(rollbackFor = Throwable.class)
 public class SalonServiceImpl implements SalonService {
 
     @Autowired
     SalonRepository salonRepository;
-
-    @Autowired
-    private SalonRepository salonRepository;
 
     @Autowired
     private WardRepository wardRepository;
