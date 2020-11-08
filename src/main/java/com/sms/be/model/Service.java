@@ -37,7 +37,7 @@ public class Service extends BaseEntity {
     @Column
     private boolean isRecommend = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private ServiceType serviceType;
 
 }

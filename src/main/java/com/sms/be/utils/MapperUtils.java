@@ -3,13 +3,14 @@ package com.sms.be.utils;
 import com.sms.be.constant.CommonConstants;
 import com.sms.be.constant.ErrorMessage;
 import com.sms.be.dto.response.DistrictResponse;
+import com.sms.be.dto.response.ServiceBookingResponse;
 import com.sms.be.model.District;
+import com.sms.be.model.Service;
 import com.sms.be.model.Ward;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class MapperUtils {
@@ -40,5 +41,16 @@ public class MapperUtils {
                 : wardName.replace("Xã", CommonConstants.EMPTY)
                     .replace("Phường", CommonConstants.EMPTY)
                     .replace("Thị trấn", CommonConstants.EMPTY).trim();
+    }
+
+    public static ServiceBookingResponse serviceToServiceBookingResponse(Service service) {
+        return ServiceBookingResponse.builder()
+                .id(service.getId())
+                .bookingImage(service.getBookingImage())
+                .bookingRecommendImage(service.getBookingRecommendImage())
+                .isRecommend(service.isRecommend())
+                .price(service.getPrice())
+                .serviceType(service.getServiceType().getName())
+                .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.sms.be.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sms.be.model.base.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class ServiceType extends BaseEntity {
     @Column
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "serviceType", fetch = FetchType.LAZY)
     private List<Service> services;
 }
