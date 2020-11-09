@@ -14,8 +14,10 @@ public class SalonRepositoryImpl extends AbstractCustomQuery implements SalonRep
     public Page<SalonInternalResponse> getSalonPage(int pageOffset, int pageSize) {
         QSalon salon = QSalon.salon;
         QEmployee employee = QEmployee.employee;
-        JPAQuery<SalonInternalResponse> query = new JPAQuery<>(entityManager).from(salon, employee)
+        JPAQuery<SalonInternalResponse> query = new JPAQuery<>(entityManager)
+                .from(salon, employee)
                 .where(salon.manager.eq(employee))
+                .orderBy(salon.id.asc())
                 .select(Projections.constructor(SalonInternalResponse.class,
                         salon.id, employee.name, salon.image, salon.street,
                         salon.ward.name, salon.district.name,
