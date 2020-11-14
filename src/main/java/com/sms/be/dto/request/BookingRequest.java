@@ -18,7 +18,9 @@ public class BookingRequest {
     @NotNull
     private Long salonId;
     @NotNull
-    private String dateTime;
+    private String date;
+    @NotNull
+    private String time;
     @NotNull
     private List<Long> serviceIds;
 }

@@ -20,9 +20,4 @@ public class CustomerController {
         bookingService.bookServices(bookingRequest);
         return ResponseEntity.noContent().build();
     }
-    @GetMapping("/booking")
-    public ResponseEntity<Void> bookServices(@Valid @RequestBody BookingRequest bookingRequest) {
-        bookingService.bookServices(bookingRequest);
-        return ResponseEntity.noContent().build();
-    }
 }

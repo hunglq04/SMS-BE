@@ -62,9 +62,8 @@ public class BookingServiceImpl implements BookingService {
         Salon salon = salonRepository.findById(bookingRequest.getSalonId())
                 .orElseThrow(SalonNotFoundException::new);
         Booking booking = Booking.builder()
-                //TODO correct date time
-                .date(LocalDate.parse("2020-02-02"))
-                .time(LocalTime.parse("11:30:00"))
+                .date(LocalDate.parse(bookingRequest.getDate()))
+                .time(LocalTime.parse(bookingRequest.getTime()))
                 .customer(customer)
                 .stylist(stylist)
                 .salon(salon)
