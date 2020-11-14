@@ -5,6 +5,8 @@ import lombok.Getter;
 public enum ErrorMessage {
     INVALID_INPUT(400),
     ACCESS_DENIED(401),
+    CUSTOMER_NOT_FOUND(404),
+    SALON_NOT_FOUND(404),
     PROVINCE_NOT_FOUND(404),
     ROLE_NOT_FOUND(404),
     EMPLOYEE_NOT_FOUND(404),

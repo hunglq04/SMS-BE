@@ -3,6 +3,7 @@ package com.sms.be.model;
 import com.sms.be.constant.BookingStatus;
 import com.sms.be.model.base.BaseEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @SequenceGenerator(name = "SEQ_ID", sequenceName = "SEQ_BOOKING", allocationSize = 1, initialValue=100)
 public class Booking extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
