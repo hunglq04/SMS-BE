@@ -2,6 +2,7 @@ package com.sms.be.model;
 
 import com.sms.be.model.base.BaseEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @SequenceGenerator(name = "SEQ_ID", sequenceName = "SEQ_CUSTOMER", allocationSize = 1, initialValue=100)
 public class Customer extends BaseEntity {
     @Column

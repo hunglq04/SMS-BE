@@ -20,4 +20,13 @@ public class RegisterRequest {
     private String password;
     @NotNull
     private List<String> roles;
+    @NotNull
+    private String name;
+    private String phone;
+    private String email;
+    private String address;
+    private String idCard;
+    private String avatar;
+    private Long salary;
+    private Long salonId;
 }
