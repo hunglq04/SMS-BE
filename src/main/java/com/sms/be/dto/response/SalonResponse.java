@@ -1,11 +1,12 @@
 package com.sms.be.dto.response;
 
-import com.sms.be.model.base.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class SalonResponse {
 
     private Long id;
@@ -17,4 +18,6 @@ public class SalonResponse {
     private String ward;
 
     private String province;
+
+    private String image;
 }

@@ -3,8 +3,10 @@ package com.sms.be.utils;
 import com.sms.be.constant.CommonConstants;
 import com.sms.be.constant.ErrorMessage;
 import com.sms.be.dto.response.DistrictResponse;
+import com.sms.be.dto.response.SalonResponse;
 import com.sms.be.dto.response.ServiceBookingResponse;
 import com.sms.be.model.District;
+import com.sms.be.model.Salon;
 import com.sms.be.model.Service;
 import com.sms.be.model.Ward;
 import org.apache.commons.lang3.StringUtils;
@@ -53,4 +55,16 @@ public class MapperUtils {
                 .serviceType(service.getServiceType().getName())
                 .build();
     }
+    
+    public static SalonResponse mapSalonResponse(Salon salon) {
+        SalonResponse salonResponse = new SalonResponse();
+        salonResponse.setId(salon.getId());
+        salonResponse.setStreet(salon.getStreet());
+        salonResponse.setDistrict(String.join(StringUtils.SPACE, salon.getDistrict().getPrefix(), salon.getDistrict().getName()));
+        salonResponse.setWard(String.join(StringUtils.SPACE, salon.getWard().getPrefix(), salon.getWard().getName()));
+        salonResponse.setProvince(salon.getProvince().getName());
+        salonResponse.setImage(salon.getImage());
+        return salonResponse;
+    }
+    
 }

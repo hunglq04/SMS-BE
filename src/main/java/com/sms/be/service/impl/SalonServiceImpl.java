@@ -34,19 +34,10 @@ public class SalonServiceImpl implements SalonService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    private static final String EMPTY_STR = " ";
-
-    public List<SalonResponse> findAll()
-    {
+    public List<SalonResponse> findAll() {
         final List<Salon> lstSalon = salonRepository.findAll();
-
-        return lstSalon.stream().map(SalonServiceImpl::mapSalonResponse).collect(Collectors.toList());
-    }
-
-    public static SalonResponse mapSalonResponse(Salon salon) {
-        String s = salon.getDistrict().getPrefix() + salon.getDistrict().getName();
-        return new SalonResponse(salon.getId() ,salon.getStreet(), String.join(EMPTY_STR, salon.getDistrict().getPrefix(), salon.getDistrict().getName()),
-                String.join(EMPTY_STR, salon.getWard().getPrefix(), salon.getWard().getName()), salon.getProvince().getName());
+        return lstSalon.stream().map(MapperUtils::mapSalonResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
