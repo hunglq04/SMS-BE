@@ -45,10 +45,6 @@ public class BookingServiceImpl implements BookingService {
     @Autowired
     private SalonRepository salonRepository;
 
-    public List<StylishInfo> getStylistViaDate() {
-        return bookingRepository.getStylishInfo();
-    }
-
     @Override
     public void bookServices(BookingRequest bookingRequest) {
         SecurityContextHolder.getContext();

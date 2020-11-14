@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface EmployeeRepositoryCustom {
     List<ManagerInfoDto> getAllManagerInfos();
     Optional<Employee> findEmployeeByIdAndRole(Long id, String role);
+    List<Employee> findAllBySalonAndRole(Long salonId, String roleStylist);
 }

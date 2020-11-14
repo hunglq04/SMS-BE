@@ -45,4 +45,19 @@ public class EmployeeRepositoryImpl extends AbstractCustomQuery implements Emplo
                 .fetchOne();
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public List<Employee> findAllBySalonAndRole(Long salonId, String role) {
+        QEmployee employee = new QEmployee("employee");
+        QRole qRole = new QRole("employee_role");
+        QAccount account = new QAccount("account");
+        JPQLQuery<?> query = new JPAQuery<>(entityManager);
+        return query.from(employee)
+                .innerJoin(employee.account, account)
+                .innerJoin(account.roles, qRole)
+                .where(qRole.name.eq(role))
+                .where(employee.salon.id.eq(salonId))
+                .select(employee)
+                .fetch();
+    }
 }

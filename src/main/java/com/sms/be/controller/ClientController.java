@@ -39,8 +39,8 @@ public class ClientController {
     }
 
     @GetMapping("/get-all-stylish")
-    public ResponseEntity<List<StylishResponse>> getAllStylish() {
-        return new ResponseEntity<>(employeeService.getStylishResponse(), HttpStatus.OK);
+    public ResponseEntity<List<StylishResponse>> getAllStylish(Long salonId, String date) {
+        return ResponseEntity.ok(employeeService.getStylishResponse(salonId, date));
     }
 
     @GetMapping("/service/booking")
