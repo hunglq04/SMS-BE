@@ -12,8 +12,6 @@ import java.util.List;
 @Data
 public class BookingRequest {
     @NotNull
-    private Long customerId;
-    @NotNull
     private Long stylistId;
     @NotNull
     private Long salonId;

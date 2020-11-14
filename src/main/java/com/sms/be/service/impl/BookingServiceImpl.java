@@ -7,11 +7,9 @@ import com.sms.be.dto.response.StylishInfo;
 import com.sms.be.exception.CustomerNotFound;
 import com.sms.be.exception.EmployeeNotFound;
 import com.sms.be.exception.SalonNotFoundException;
-import com.sms.be.model.Booking;
-import com.sms.be.model.Customer;
-import com.sms.be.model.Employee;
-import com.sms.be.model.Salon;
+import com.sms.be.model.*;
 import com.sms.be.repository.*;
+import com.sms.be.security.CustomUserDetails;
 import com.sms.be.service.core.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,8 +45,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void bookServices(BookingRequest bookingRequest) {
-        SecurityContextHolder.getContext();
-        Customer customer = customerRepository.findById(bookingRequest.getCustomerId())
+        Account requester = ((CustomUserDetails) SecurityContextHolder
+                .getContext().getAuthentication().getDetails()).getAccount();
+        Customer customer = customerRepository.findByAccount(requester)
                 .orElseThrow(() -> new CustomerNotFound("No customer found"));
         Employee stylist = employeeRepository.findEmployeeByIdAndRole(
                 bookingRequest.getStylistId(), CommonConstants.ROLE_STYLIST)
