@@ -11,8 +11,8 @@ public enum ErrorMessage {
     ROLE_NOT_FOUND(404),
     EMPLOYEE_NOT_FOUND(404),
     ADDRESS_NOT_FOUND(404),
+    USERNAME_ALREADY_EXIST(409 ),
     UNEXPECTED_ERROR(500), ;
-
     @Getter
     private final int value;
 

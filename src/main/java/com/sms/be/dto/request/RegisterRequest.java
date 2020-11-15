@@ -23,7 +23,6 @@ public class RegisterRequest {
     @NotNull
     private String name;
     private String phone;
-    private String email;
     private String address;
     private String idCard;
     private String avatar;

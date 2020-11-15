@@ -1,9 +1,11 @@
 package com.sms.be.service.impl;
 
 import com.sms.be.constant.CommonConstants;
+import com.sms.be.dto.AccountDto;
 import com.sms.be.dto.request.RegisterRequest;
 import com.sms.be.exception.RoleNotFound;
 import com.sms.be.exception.SalonNotFoundException;
+import com.sms.be.exception.UsernameAlreadyExist;
 import com.sms.be.model.*;
 import com.sms.be.repository.*;
 import com.sms.be.service.core.AccountService;
@@ -41,6 +43,11 @@ public class AccountServiceImpl implements AccountService {
         }
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String password = passwordEncoder.encode(request.getPassword());
+        accountRepository.findByUsername(request.getUsername())
+                .ifPresent(account -> {
+                    throw new UsernameAlreadyExist(
+                            account.getUsername() + " Already exists");
+                });
         Account account = new Account(request.getUsername(), password, roles);
         accountRepository.save(account);
         if (request.getRoles().contains(CommonConstants.ROLE_CUSTOMER)) {
@@ -48,6 +55,24 @@ public class AccountServiceImpl implements AccountService {
         } else {
             createEmployee(request, account);
         }
+    }
+
+    @Override
+    public AccountDto loginSocial(RegisterRequest request) {
+        String username = accountRepository.findByUsername(request.getUsername())
+                .orElseGet(() -> {
+                    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                    String password = passwordEncoder.encode(request.getPassword());
+                    List<Role> roles = roleRepository.findByNameIn(request.getRoles());
+                    Account newAccount = Account.builder()
+                            .username(request.getUsername())
+                            .password(password)
+                            .roles(roles).build();
+                    accountRepository.save(newAccount);
+                    createCustomer(request, newAccount);
+                    return newAccount;
+                }).getUsername();
+        return new AccountDto(username, request.getPassword());
     }
 
     private void createEmployee(RegisterRequest request, Account account) {
@@ -62,8 +87,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void createCustomer(RegisterRequest request, Account account) {
+        String email = request.getUsername().contains("@") ? request.getUsername() : null;
         Customer customer = Customer.builder().account(account)
-                .address(request.getAddress()).email(request.getEmail())
+                .address(request.getAddress()).email(email)
                 .name(request.getName()).phoneNumber(request.getPhone())
                 .build();
         customerRepository.save(customer);

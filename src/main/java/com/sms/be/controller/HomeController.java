@@ -1,5 +1,6 @@
 package com.sms.be.controller;
 
+import com.sms.be.constant.CommonConstants;
 import com.sms.be.dto.AccountDto;
 import com.sms.be.dto.request.RegisterRequest;
 import com.sms.be.dto.response.DistrictResponse;
@@ -22,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,18 +47,12 @@ public class HomeController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody AccountDto accountDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        accountDto.getUsername(),
-                        accountDto.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
-        List<String> roles = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(new LoginResponse(jwt, roles));
+        return authenticateAccount(accountDto);
+    }
+
+    @PostMapping("/login/social")
+    public ResponseEntity<LoginResponse> loginSocial(@Valid @RequestBody RegisterRequest request) {
+        return authenticateAccount(accountService.loginSocial(request));
     }
 
     @GetMapping("/provinces")
@@ -75,4 +71,18 @@ public class HomeController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    private ResponseEntity<LoginResponse> authenticateAccount(@RequestBody @Valid AccountDto accountDto) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        accountDto.getUsername(),
+                        accountDto.getPassword()
+                )
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new LoginResponse(jwt, roles));
+    }
 }

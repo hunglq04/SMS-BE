@@ -5,4 +5,5 @@ import com.sms.be.dto.request.RegisterRequest;
 
 public interface AccountService {
     void createNewAccount(RegisterRequest request);
+    AccountDto loginSocial(RegisterRequest registerRequest);
 }

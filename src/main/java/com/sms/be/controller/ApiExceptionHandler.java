@@ -37,7 +37,7 @@ public class ApiExceptionHandler {
             IllegalArgumentException.class, InvalidDataAccessApiUsageException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorResponse badCredentialException(Exception ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        LOGGER.error(ex.getMessage(), ex);
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ErrorMessage.INVALID_INPUT, ex.getMessage(),
                 ((ServletWebRequest) request).getRequest().getRequestURI(), LocalDateTime.now());
     }
@@ -45,14 +45,14 @@ public class ApiExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     public ErrorResponse accessDeniedException(Exception ex, WebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        LOGGER.error(ex.getMessage(), ex);
         return new ErrorResponse(HttpStatus.FORBIDDEN.value(), ErrorMessage.ACCESS_DENIED, ex.getMessage(),
                 ((ServletWebRequest) request).getRequest().getRequestURI(), LocalDateTime.now());
     }
 
     @ExceptionHandler(RestException.class)
     public ResponseEntity<ErrorResponse> restException(RestException ex, ServletWebRequest request) {
-        LOGGER.warn(ex.getMessage());
+        LOGGER.error(ex.getMessage(), ex);
         final HttpStatus httpStatus = MapperUtils.errorMessageToHttpStatus(ex.getErrorMessage());
         final ErrorResponse body = ErrorResponse.builder()
                 .message(ex.getMessage())

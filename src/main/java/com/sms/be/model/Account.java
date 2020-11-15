@@ -2,6 +2,7 @@ package com.sms.be.model;
 
 import com.sms.be.model.base.BaseEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @SequenceGenerator(name = "SEQ_ID", sequenceName = "SEQ_ACCOUNT", allocationSize = 1, initialValue=100)
 public class Account extends BaseEntity {
     private String username;

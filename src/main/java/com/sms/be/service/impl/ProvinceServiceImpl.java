@@ -5,11 +5,13 @@ import com.sms.be.repository.ProvinceRepository;
 import com.sms.be.service.core.ProvinceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(rollbackFor = Throwable.class)
 public class ProvinceServiceImpl implements ProvinceService {
 
     @Autowired
