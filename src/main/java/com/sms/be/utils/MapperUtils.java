@@ -54,10 +54,13 @@ public class MapperUtils {
     public static ServiceBookingResponse serviceToServiceBookingResponse(Service service) {
         return ServiceBookingResponse.builder()
                 .id(service.getId())
+                .name(service.getName())
+                .description(service.getDescription())
                 .bookingImage(service.getBookingImage())
                 .bookingRecommendImage(service.getBookingRecommendImage())
                 .isRecommend(service.isRecommend())
                 .price(service.getPrice())
+                .duration(service.getDuration())
                 .serviceType(service.getServiceType().getName())
                 .build();
     }

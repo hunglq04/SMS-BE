@@ -20,4 +20,5 @@ public interface StylishInfo {
 
     int getDuration();
 
+    String getAvatar();
 }

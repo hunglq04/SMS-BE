@@ -12,8 +12,11 @@ import lombok.NoArgsConstructor;
 public class ServiceBookingResponse {
     private Long id;
     private String bookingImage;
+    private String description;
+    private String name;
     private String bookingRecommendImage;
     private Long price;
+    private Integer duration;
     private String serviceType;
     private boolean isRecommend = false;
 }
