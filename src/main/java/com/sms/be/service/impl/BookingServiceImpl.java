@@ -3,26 +3,25 @@ package com.sms.be.service.impl;
 import com.sms.be.constant.BookingStatus;
 import com.sms.be.constant.CommonConstants;
 import com.sms.be.dto.request.BookingRequest;
-import com.sms.be.dto.response.StylishInfo;
+import com.sms.be.dto.response.BookingResponse;
 import com.sms.be.exception.CustomerNotFound;
 import com.sms.be.exception.EmployeeNotFound;
 import com.sms.be.exception.SalonNotFoundException;
 import com.sms.be.model.*;
 import com.sms.be.repository.*;
-import com.sms.be.security.CustomUserDetails;
 import com.sms.be.service.core.BookingService;
+import com.sms.be.utils.MapperUtils;
+import com.sms.be.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import springfox.documentation.spi.service.contexts.SecurityContext;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = Throwable.class)
@@ -45,8 +44,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void bookServices(BookingRequest bookingRequest) {
-        Account requester = ((CustomUserDetails) SecurityContextHolder
-                .getContext().getAuthentication().getDetails()).getAccount();
+        Account requester = SecurityUtils.getCurrentAccount();
         Customer customer = customerRepository.findByAccount(requester)
                 .orElseThrow(() -> new CustomerNotFound("No customer found"));
         Employee stylist = employeeRepository.findEmployeeByIdAndRole(
@@ -66,5 +64,15 @@ public class BookingServiceImpl implements BookingService {
                 .status(BookingStatus.WAITING)
                 .build();
         bookingRepository.save(booking);
+    }
+
+    @Override
+    public List<BookingResponse> getBookingHistoryByCustomer() {
+        Account requester = SecurityUtils.getCurrentAccount();
+        Customer customer = customerRepository.findByAccount(requester)
+                .orElseThrow(() -> new CustomerNotFound("No customer found"));
+        return bookingRepository.findBookingHistoryByCustomer(customer).stream()
+                .map(MapperUtils::bookingToBookingResponse)
+                .collect(Collectors.toList());
     }
 }

@@ -2,17 +2,14 @@ package com.sms.be.utils;
 
 import com.sms.be.constant.CommonConstants;
 import com.sms.be.constant.ErrorMessage;
+import com.sms.be.dto.response.BookingResponse;
 import com.sms.be.dto.response.DistrictResponse;
 import com.sms.be.dto.response.SalonResponse;
 import com.sms.be.dto.response.ServiceBookingResponse;
-import com.sms.be.model.District;
-import com.sms.be.model.Salon;
-import com.sms.be.model.Service;
-import com.sms.be.model.Ward;
+import com.sms.be.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class MapperUtils {
@@ -54,6 +51,7 @@ public class MapperUtils {
     public static ServiceBookingResponse serviceToServiceBookingResponse(Service service) {
         return ServiceBookingResponse.builder()
                 .id(service.getId())
+                .name(service.getName())
                 .bookingImage(service.getBookingImage())
                 .bookingRecommendImage(service.getBookingRecommendImage())
                 .isRecommend(service.isRecommend())
@@ -71,6 +69,18 @@ public class MapperUtils {
         salonResponse.setProvince(salon.getProvince().getName());
         salonResponse.setImage(salon.getImage());
         return salonResponse;
+    }
+
+    public static BookingResponse bookingToBookingResponse(Booking booking) {
+        return BookingResponse.builder()
+                .salon(mapSalonResponse(booking.getSalon()))
+                .dateTime(booking.getDate() + StringUtils.SPACE +(booking.getTime()))
+                .services(booking.getServices().stream()
+                        .map(MapperUtils::serviceToServiceBookingResponse)
+                        .collect(Collectors.toList()))
+                .bookingStatus(booking.getStatus())
+                .build();
+
     }
     
 }
