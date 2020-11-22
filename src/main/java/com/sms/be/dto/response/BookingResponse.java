@@ -11,9 +11,11 @@ import java.util.List;
 @Data
 @Builder
 public class BookingResponse {
+    private Long bookingId;
     private SalonResponse salon;
     private String dateTime;
     private List<ServiceBookingResponse> services;
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
+    private String stylist;
 }
