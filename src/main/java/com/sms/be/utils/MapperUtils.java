@@ -2,10 +2,7 @@ package com.sms.be.utils;
 
 import com.sms.be.constant.CommonConstants;
 import com.sms.be.constant.ErrorMessage;
-import com.sms.be.dto.response.BookingResponse;
-import com.sms.be.dto.response.DistrictResponse;
-import com.sms.be.dto.response.SalonResponse;
-import com.sms.be.dto.response.ServiceBookingResponse;
+import com.sms.be.dto.response.*;
 import com.sms.be.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -59,6 +56,17 @@ public class MapperUtils {
                 .price(service.getPrice())
                 .duration(service.getDuration())
                 .serviceType(service.getServiceType().getName())
+                .build();
+    }
+
+    public static ProductResponse productToProductResponse(Product product) {
+        return ProductResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .image(product.getImage())
+                .price(product.getPrice())
+                .productType(product.getProductType().getName())
                 .build();
     }
     
