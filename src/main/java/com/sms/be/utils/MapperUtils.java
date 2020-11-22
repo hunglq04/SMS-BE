@@ -75,12 +75,14 @@ public class MapperUtils {
 
     public static BookingResponse bookingToBookingResponse(Booking booking) {
         return BookingResponse.builder()
+                .bookingId(booking.getId())
                 .salon(mapSalonResponse(booking.getSalon()))
                 .dateTime(booking.getDate() + StringUtils.SPACE +(booking.getTime()))
                 .services(booking.getServices().stream()
                         .map(MapperUtils::serviceToServiceBookingResponse)
                         .collect(Collectors.toList()))
                 .bookingStatus(booking.getStatus())
+                .stylist(booking.getStylist().getName())
                 .build();
 
     }
