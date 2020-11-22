@@ -1,5 +1,9 @@
 package com.sms.be.constant;
 
+import com.sms.be.model.Account;
+import com.sms.be.security.CustomUserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 public interface CommonConstants {
     String EMPTY = "";
     String SPACE = " ";

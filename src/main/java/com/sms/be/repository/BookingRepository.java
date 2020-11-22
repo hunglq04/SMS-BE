@@ -3,6 +3,7 @@ package com.sms.be.repository;
 import com.sms.be.dto.response.StylishInfo;
 import com.sms.be.model.Booking;
 import com.sms.be.model.Employee;
+import com.sms.be.model.Service;
 import com.sms.be.repository.base.BaseRepository;
 import com.sms.be.repository.custom.BookingRepositoryCustom;
 import org.springframework.data.jpa.repository.Query;
@@ -23,5 +24,4 @@ public interface BookingRepository extends BaseRepository<Booking, Long>, Bookin
             "group by e.name, b.time, e.avg_rating, e.id",
             nativeQuery = true)
     List<StylishInfo> getStylishInfo(LocalDate dateTime);
-
 }

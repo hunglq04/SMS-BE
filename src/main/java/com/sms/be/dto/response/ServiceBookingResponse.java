@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ServiceBookingResponse {
     private Long id;
+    private String name;
     private String bookingImage;
     private String description;
     private String name;
