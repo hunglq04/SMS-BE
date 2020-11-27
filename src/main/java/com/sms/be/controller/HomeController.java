@@ -6,6 +6,7 @@ import com.sms.be.dto.request.RegisterRequest;
 import com.sms.be.dto.response.DistrictResponse;
 import com.sms.be.dto.response.LoginResponse;
 import com.sms.be.dto.response.ProvinceResponse;
+import com.sms.be.dto.response.SalonResponse;
 import com.sms.be.exception.ProvinceNotFoundException;
 import com.sms.be.security.CustomUserDetails;
 import com.sms.be.security.JwtTokenProvider;

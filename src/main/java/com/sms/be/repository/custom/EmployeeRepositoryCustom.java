@@ -1,6 +1,7 @@
 package com.sms.be.repository.custom;
 
 import com.sms.be.dto.ManagerInfoDto;
+import com.sms.be.model.Account;
 import com.sms.be.model.Employee;
 
 import java.util.List;

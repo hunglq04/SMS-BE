@@ -13,13 +13,12 @@ import com.sms.be.service.core.BookingService;
 import com.sms.be.utils.MapperUtils;
 import com.sms.be.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,5 +73,12 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findBookingHistoryByCustomer(customer).stream()
                 .map(MapperUtils::bookingToBookingResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<BookingResponse> getBookingPageByDateAndSalon(
+            int pageSize, int pageOffset, String fromDate, Long salonId) {
+        return bookingRepository.getBookingPageFromDateBySalon(pageSize, pageOffset, fromDate, salonId)
+                .map(MapperUtils::bookingToBookingResponse);
     }
 }
