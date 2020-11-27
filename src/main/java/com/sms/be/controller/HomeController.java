@@ -6,12 +6,21 @@ import com.sms.be.dto.request.RegisterRequest;
 import com.sms.be.dto.response.DistrictResponse;
 import com.sms.be.dto.response.LoginResponse;
 import com.sms.be.dto.response.ProvinceResponse;
+import com.sms.be.dto.response.SalonResponse;
 import com.sms.be.exception.ProvinceNotFoundException;
+import com.sms.be.model.Account;
+import com.sms.be.model.Customer;
+import com.sms.be.model.Employee;
+import com.sms.be.repository.AccountRepository;
+import com.sms.be.repository.CustomerRepository;
+import com.sms.be.repository.EmployeeRepository;
 import com.sms.be.security.CustomUserDetails;
 import com.sms.be.security.JwtTokenProvider;
 import com.sms.be.service.core.AccountService;
 import com.sms.be.service.core.DistrictService;
 import com.sms.be.service.core.ProvinceService;
+import com.sms.be.utils.SecurityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +34,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,6 +55,15 @@ public class HomeController {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody AccountDto accountDto) {
@@ -83,6 +103,21 @@ public class HomeController {
         List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(new LoginResponse(jwt, roles));
+        Account account = accountRepository.findByUsername(accountDto.getUsername())
+                .orElse(new Account());
+        String name = StringUtils.EMPTY;
+        String avatar = StringUtils.EMPTY;
+        Optional<Customer> customer = customerRepository.findByAccount(account);
+        if (customer.isPresent()) {
+            name = customer.get().getName();
+        } else {
+            Optional<Employee> employee = employeeRepository.findByAccount(account);
+            if (employee.isPresent()) {
+                name = employee.get().getName();
+                avatar = employee.get().getAvatar();
+            }
+        }
+
+        return ResponseEntity.ok(new LoginResponse(jwt, roles, name, avatar));
     }
 }

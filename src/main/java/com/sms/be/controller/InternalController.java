@@ -2,7 +2,10 @@ package com.sms.be.controller;
 
 import com.sms.be.dto.ManagerInfoDto;
 import com.sms.be.dto.request.SalonRequest;
+import com.sms.be.dto.response.BookingResponse;
 import com.sms.be.dto.response.SalonInternalResponse;
+import com.sms.be.dto.response.SalonResponse;
+import com.sms.be.service.core.BookingService;
 import com.sms.be.service.core.EmployeeService;
 import com.sms.be.service.core.SalonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,9 @@ public class InternalController {
     @Autowired
     private SalonService salonService;
 
+    @Autowired
+    private BookingService bookingService;
+
     @GetMapping("/employee/managers")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<ManagerInfoDto>> getAllManagers() {
@@ -44,5 +50,18 @@ public class InternalController {
     public ResponseEntity<Page<SalonInternalResponse>> getSalonPage(int pageOffset, int pageSize) {
         return ResponseEntity.ok(salonService.getSalonPage(pageOffset,
                 pageSize));
+    }
+
+    @GetMapping("/booking")
+    public ResponseEntity<Page<BookingResponse>> getBookingPage(
+            int pageOffset, int pageSize, String fromDate, Long salonId) {
+        return ResponseEntity.ok(bookingService.getBookingPageByDateAndSalon(
+                pageSize, pageOffset, fromDate, salonId));
+    }
+
+    @GetMapping("/salon/manager")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
+    public ResponseEntity<List<SalonResponse>> getAllSalon() {
+        return ResponseEntity.ok(salonService.getSalonByRole());
     }
 }

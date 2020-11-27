@@ -91,8 +91,17 @@ public class MapperUtils {
                         .collect(Collectors.toList()))
                 .bookingStatus(booking.getStatus())
                 .stylist(booking.getStylist().getName())
+                .customer(customerToCustomerResponse(booking.getCustomer()))
                 .build();
+    }
 
+    public static CustomerResponse customerToCustomerResponse(Customer customer) {
+        return CustomerResponse.builder()
+                .customerId(customer.getId())
+                .email(customer.getEmail())
+                .phone(customer.getPhoneNumber())
+                .name(customer.getName())
+                .build();
     }
     
 }

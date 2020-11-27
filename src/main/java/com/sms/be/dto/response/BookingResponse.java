@@ -18,4 +18,5 @@ public class BookingResponse {
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
     private String stylist;
+    private CustomerResponse customer;
 }
