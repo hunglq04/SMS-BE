@@ -1,11 +1,9 @@
 package com.sms.be.controller;
 
 import com.sms.be.dto.response.*;
+import com.sms.be.exception.ProvinceNotFoundException;
 import com.sms.be.model.Service;
-import com.sms.be.service.core.BookingService;
-import com.sms.be.service.core.ProvinceService;
-import com.sms.be.service.core.ServiceService;
-import com.sms.be.service.core.ProductService;
+import com.sms.be.service.core.*;
 import com.sms.be.service.impl.BookingServiceImpl;
 import com.sms.be.service.impl.EmployeeServiceImpl;
 import com.sms.be.service.impl.SalonServiceImpl;
@@ -14,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +30,9 @@ public class ClientController {
     @Autowired
     private ProvinceService provinceService;
 
+    @Autowired
+    private DistrictService districtService;
+    
     @Autowired
     private EmployeeServiceImpl employeeService;
 
@@ -49,13 +52,18 @@ public class ClientController {
         return provinceService.getAllProvince();
     }
 
+    @GetMapping("/provinces/{provinceId}/districts")
+    public List<DistrictResponse> getDistrictAndWards(@Valid @PathVariable(name = "provinceId") Long provinceId) throws ProvinceNotFoundException {
+        return districtService.getDistrictsAndWardsByProvinceId(provinceId);
+    }
+
     @GetMapping("/get-all-stylish")
     public ResponseEntity<List<StylishResponse>> getAllStylish(Long salonId, String date) {
         return ResponseEntity.ok(employeeService.getStylishResponse(salonId, date));
     }
     @GetMapping("/product")
-    public ResponseEntity<List<ProductResponse>> getAllProduct() {
-        List<ProductResponse> products = productService.getAllProduct();
+    public ResponseEntity<List<ProductResponse>> getAllProduct(String name) {
+        List<ProductResponse> products = productService.getAllProduct(name);
         return ResponseEntity.ok(products);
     }
     @GetMapping("/service/booking")

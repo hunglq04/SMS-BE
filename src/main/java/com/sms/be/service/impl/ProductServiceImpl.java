@@ -5,6 +5,7 @@ import com.sms.be.repository.ProductRepository;
 import com.sms.be.service.core.ProductService;
 import com.sms.be.model.Product;
 import com.sms.be.utils.MapperUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +20,10 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
 
     @Override
-    public List<ProductResponse> getAllProduct() {
-        List<Product> products = productRepository.findAll();
+    public List<ProductResponse> getAllProduct(String name) {
+        List<Product> products = StringUtils.isEmpty(name) ?
+                productRepository.findAll() :
+                productRepository.findByNameContains(name);
         return products.stream().map(MapperUtils::productToProductResponse)
                 .collect(Collectors.toList());
     }

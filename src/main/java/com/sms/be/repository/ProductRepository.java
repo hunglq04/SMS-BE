@@ -8,4 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends BaseRepository<Product, Long> {
+    List<Product> findByNameContains(String name);
 }

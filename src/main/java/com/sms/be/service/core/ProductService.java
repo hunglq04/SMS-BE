@@ -5,5 +5,5 @@ import com.sms.be.dto.response.ProductResponse;
 import java.util.List;
 
 public interface ProductService {
-    List<ProductResponse> getAllProduct();
+    List<ProductResponse> getAllProduct(String name);
 }
