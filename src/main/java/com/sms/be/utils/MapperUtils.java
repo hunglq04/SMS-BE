@@ -7,6 +7,7 @@ import com.sms.be.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class MapperUtils {
@@ -78,6 +79,8 @@ public class MapperUtils {
         salonResponse.setWard(String.join(StringUtils.SPACE, salon.getWard().getPrefix(), salon.getWard().getName()));
         salonResponse.setProvince(salon.getProvince().getName());
         salonResponse.setImage(salon.getImage());
+        salonResponse.setStylishResponses(new ArrayList<>());
+        salonResponse.setServices(new ArrayList<>());
         return salonResponse;
     }
 

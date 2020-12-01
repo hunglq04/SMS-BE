@@ -77,6 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(ImmutableList.of("http://localhost:4200",
+                "http://localhost:4444",
                 "https://sms-fe.web.app", "https://sms-fe.firebaseapp.com",
                 "https://v-barbershop.web.app", "https://v-barbershop.firebaseapp.com"));
         configuration.setAllowedMethods(ImmutableList.of("HEAD",

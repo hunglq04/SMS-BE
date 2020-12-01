@@ -38,7 +38,8 @@ public class SalonRepositoryImpl extends AbstractCustomQuery implements SalonRep
         List<String> roles = employee.getAccount().getRoles().stream()
                 .map(Role::getName).collect(Collectors.toList());
         if (!roles.contains(CommonConstants.ROLE_ADMIN)) {
-            condition.and(salon.manager.eq(employee));
+            condition.and(salon.manager.eq(employee))
+                    .or(salon.eq(employee.getSalon()));
         }
         return new JPAQuery<>(entityManager)
                 .from(salon)

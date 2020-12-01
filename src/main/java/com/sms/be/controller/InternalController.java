@@ -60,7 +60,7 @@ public class InternalController {
     }
 
     @GetMapping("/salon/manager")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_CASHIER')")
     public ResponseEntity<List<SalonResponse>> getAllSalon() {
         return ResponseEntity.ok(salonService.getSalonByRole());
     }

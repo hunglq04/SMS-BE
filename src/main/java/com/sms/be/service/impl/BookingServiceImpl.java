@@ -78,7 +78,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Page<BookingResponse> getBookingPageByDateAndSalon(
             int pageSize, int pageOffset, String fromDate, Long salonId) {
-        return bookingRepository.getBookingPageFromDateBySalon(pageSize, pageOffset, fromDate, salonId)
+        Employee requester = employeeRepository.findByAccount(SecurityUtils.getCurrentAccount())
+                .orElseThrow(() -> new EmployeeNotFound("No employee found"));
+        return bookingRepository.getBookingPageFromDateBySalon(pageSize, pageOffset, fromDate, salonId, requester)
                 .map(MapperUtils::bookingToBookingResponse);
     }
 }
