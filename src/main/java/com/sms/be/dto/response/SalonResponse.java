@@ -1,5 +1,6 @@
 package com.sms.be.dto.response;
 
+import com.sms.be.model.Service;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,5 +25,7 @@ public class SalonResponse {
     private String image;
 
     List<StylishResponse> stylishResponses;
+
+    List<Service> services;
 
 }
