@@ -1,13 +1,12 @@
 package com.sms.be.controller;
 
 import com.sms.be.dto.ManagerInfoDto;
+import com.sms.be.dto.request.ProductRequest;
 import com.sms.be.dto.request.SalonRequest;
-import com.sms.be.dto.response.BookingResponse;
-import com.sms.be.dto.response.SalonInternalResponse;
-import com.sms.be.dto.response.SalonResponse;
-import com.sms.be.service.core.BookingService;
-import com.sms.be.service.core.EmployeeService;
-import com.sms.be.service.core.SalonService;
+import com.sms.be.dto.request.ServiceRequest;
+import com.sms.be.dto.response.*;
+import com.sms.be.model.Product;
+import com.sms.be.service.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/internal")
@@ -30,6 +30,18 @@ public class InternalController {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private ProductTypeService productTypeService;
+
+    @Autowired
+    private ServiceService serviceService;
+
+    @Autowired
+    private ServiceTypeService serviceTypeService;
 
     @GetMapping("/employee/managers")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -50,6 +62,65 @@ public class InternalController {
     public ResponseEntity<Page<SalonInternalResponse>> getSalonPage(int pageOffset, int pageSize) {
         return ResponseEntity.ok(salonService.getSalonPage(pageOffset,
                 pageSize));
+    }
+
+    @GetMapping("/product")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Page<ProductResponse>> getProductPage(int pageOffset, int pageSize) {
+        return ResponseEntity.ok(productService.getProductPage(pageOffset,
+                pageSize));
+    }
+
+    @PostMapping("/product")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> addProduct(@Valid @RequestBody ProductRequest request) {
+        productService.addNewProduct(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/product/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> updateProduct(@Valid @RequestBody ProductRequest productRequest, @PathVariable(name = "id") Long id) {
+        productService.updateProduct(productRequest, id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/product/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public  ResponseEntity<Void> deleteProduct(@PathVariable(name = "id") Long id){
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/producttype")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<ProductTypeReponse> getAllProductType() {
+        return productTypeService.getAllProductType();
+    }
+
+    @PostMapping("/service")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> addNewService(@Valid @RequestBody ServiceRequest request) {
+        serviceService.addNewService(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+    @PutMapping("/service/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> updateService(@Valid @RequestBody ServiceRequest request, @PathVariable(name = "id") Long id) {
+        serviceService.updateService(request, id);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/service/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public  ResponseEntity<Void> deleteService(@PathVariable(name = "id") Long id){
+        serviceService.deleteService(id);
+        return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/servicetype")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<ServiceTypeResponse> getAllServiceType() {
+        return serviceTypeService.getAllServiceType();
     }
 
     @GetMapping("/booking")

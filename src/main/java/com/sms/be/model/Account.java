@@ -15,7 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @SequenceGenerator(name = "SEQ_ID", sequenceName = "SEQ_ACCOUNT", allocationSize = 1, initialValue=100)
-public class Account extends BaseEntity {
+public class
+Account extends BaseEntity {
     private String username;
     private String password;
 
