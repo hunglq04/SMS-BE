@@ -51,4 +51,9 @@ public class Booking extends BaseEntity {
 
     @Column
     private String walkInGuest;
+
+    public Long getTotalPrice() {
+        return this.services.stream().map(Service::getPrice)
+                .reduce(Long::sum).orElse(0L);
+    }
 }

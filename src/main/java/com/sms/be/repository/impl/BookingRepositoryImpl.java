@@ -45,6 +45,9 @@ public class BookingRepositoryImpl extends AbstractCustomQuery implements Bookin
         JPQLQuery<Booking> query = new JPAQuery<>(entityManager)
                 .from(QBooking.booking)
                 .where(condition)
+                .orderBy(QBooking.booking.date.asc(),
+                        QBooking.booking.time.asc(),
+                        QBooking.booking.status.asc())
                 .select(QBooking.booking);
         return getPage(query, pageOffset, pageSize);
     }
