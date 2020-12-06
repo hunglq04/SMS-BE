@@ -21,7 +21,6 @@ public class BookingRepositoryImpl extends AbstractCustomQuery implements Bookin
                 .select(QBooking.booking)
                 .fetch();
     }
-
     @Override
     public Page<Booking> getBookingPageFromDateBySalon(int pageSize, int pageOffset, String fromDate, Long salonId) {
         BooleanBuilder condition = new BooleanBuilder();

@@ -41,7 +41,7 @@ public class Booking extends BaseEntity {
     @Column
     private Double rating;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "booking_service",
             joinColumns = {@JoinColumn( name = "booking_id")},

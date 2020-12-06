@@ -53,6 +53,13 @@ public class BookingServiceImpl implements BookingService {
                 .findAllByIdIn(bookingRequest.getServiceIds());
         Salon salon = salonRepository.findById(bookingRequest.getSalonId())
                 .orElseThrow(SalonNotFoundException::new);
+        List<Long> bookings = bookingRepository.findBookingHistoryByCustomer(customer).stream()
+                .filter(booking1 -> BookingStatus.WAITING.equals(booking1.getStatus()))
+                .map(Booking::getId)
+                .collect(Collectors.toList());
+        if (!bookings.isEmpty()) {
+            bookingRepository.deleteAllByIdIn(bookings);
+        }
         Booking booking = Booking.builder()
                 .date(LocalDate.parse(bookingRequest.getDate()))
                 .time(LocalTime.parse(bookingRequest.getTime()))
@@ -67,6 +74,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingResponse> getBookingHistoryByCustomer() {
+
         Account requester = SecurityUtils.getCurrentAccount();
         Customer customer = customerRepository.findByAccount(requester)
                 .orElseThrow(() -> new CustomerNotFound("No customer found"));
@@ -80,5 +88,10 @@ public class BookingServiceImpl implements BookingService {
             int pageSize, int pageOffset, String fromDate, Long salonId) {
         return bookingRepository.getBookingPageFromDateBySalon(pageSize, pageOffset, fromDate, salonId)
                 .map(MapperUtils::bookingToBookingResponse);
+    }
+
+    @Override
+    public void deleteBooking(Long id) {
+        bookingRepository.deleteById(id);
     }
 }

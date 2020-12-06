@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class BookingRequest {
+    private Long bookingId;
     @NotNull
     private Long stylistId;
     @NotNull

@@ -107,17 +107,26 @@ public class HomeController {
                 .orElse(new Account());
         String name = StringUtils.EMPTY;
         String avatar = StringUtils.EMPTY;
+        String email = StringUtils.EMPTY;
+        String phone = StringUtils.EMPTY;
+        String address = StringUtils.EMPTY;
         Optional<Customer> customer = customerRepository.findByAccount(account);
         if (customer.isPresent()) {
             name = customer.get().getName();
+            email = customer.get().getEmail();
+            phone = customer.get().getPhoneNumber();
+            address = customer.get().getAddress();
         } else {
             Optional<Employee> employee = employeeRepository.findByAccount(account);
             if (employee.isPresent()) {
                 name = employee.get().getName();
                 avatar = employee.get().getAvatar();
+                email = employee.get().getIdCard();
+                phone = employee.get().getPhoneNumber();
+                address = employee.get().getAddress();
             }
         }
 
-        return ResponseEntity.ok(new LoginResponse(jwt, roles, name, avatar));
+        return ResponseEntity.ok(new LoginResponse(jwt, roles, name, avatar, email, phone, address));
     }
 }

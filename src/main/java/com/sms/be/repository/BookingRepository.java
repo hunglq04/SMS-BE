@@ -15,7 +15,6 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends BaseRepository<Booking, Long>, BookingRepositoryCustom {
-
     @Query(value = "select e.id as id, e.name as name, e.avg_rating as avgRating , b.time as time, sum(s2.duration) as duration\n" +
             "from booking b inner join booking_service bs on b.id = bs.booking_id \n" +
             "inner join employee e on e.id = b.stylist_id\n" +
@@ -24,4 +23,6 @@ public interface BookingRepository extends BaseRepository<Booking, Long>, Bookin
             "group by e.name, b.time, e.avg_rating, e.id",
             nativeQuery = true)
     List<StylishInfo> getStylishInfo(LocalDate dateTime);
+
+    void deleteAllByIdIn(List<Long> bookingIds);
 }
