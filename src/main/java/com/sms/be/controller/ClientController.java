@@ -2,6 +2,8 @@ package com.sms.be.controller;
 
 import com.sms.be.dto.response.*;
 import com.sms.be.exception.ProvinceNotFoundException;
+import com.sms.be.model.OrderDetail;
+import com.sms.be.model.Product;
 import com.sms.be.model.Service;
 import com.sms.be.service.core.*;
 import com.sms.be.service.impl.BookingServiceImpl;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/client")
@@ -41,6 +44,12 @@ public class ClientController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private OrderDetailService orderDetailService;
+
+    @Autowired
+    private OrderService orderService;
 
     @GetMapping("/get-all-salon")
     public ResponseEntity<List<SalonResponse>> getAllSalon() {
@@ -66,9 +75,20 @@ public class ClientController {
         List<ProductResponse> products = productService.getAllProduct(name);
         return ResponseEntity.ok(products);
     }
+    @GetMapping("/product/detail")
+    public ResponseEntity<Optional<Product>> getProduct(Long id) {
+         Optional<Product> products = productService.getProduct(id);
+        return ResponseEntity.ok(products);
+    }
+
     @GetMapping("/service/booking")
     public ResponseEntity<List<ServiceBookingResponse>> getServiceForBooking() {
         List<ServiceBookingResponse> services = serviceService.getServiceForBooking();
+        return ResponseEntity.ok(services);
+    }
+    @GetMapping("/service/booking/detail")
+    public ResponseEntity<Optional<Service>> getService(Long id) {
+        Optional<Service> services = serviceService.getService(id);
         return ResponseEntity.ok(services);
     }
 

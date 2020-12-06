@@ -2,6 +2,7 @@ package com.sms.be.model;
 
 import com.sms.be.model.base.BaseEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import javax.persistence.SequenceGenerator;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @SequenceGenerator(name = "SEQ_ID", sequenceName = "SEQ_PRODUCT", allocationSize = 1, initialValue=100)
 public class Product extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
@@ -26,4 +28,6 @@ public class Product extends BaseEntity {
     private Long price;
 
     private String description;
+
+
 }

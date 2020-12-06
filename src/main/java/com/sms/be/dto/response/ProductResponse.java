@@ -1,5 +1,6 @@
 package com.sms.be.dto.response;
 
+import com.sms.be.constant.CommonConstants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +17,5 @@ public class ProductResponse {
     private Long price;
     private String image;
     private String productType;
+
 }

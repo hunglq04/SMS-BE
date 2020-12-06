@@ -3,10 +3,12 @@ package com.sms.be.utils;
 import com.sms.be.constant.CommonConstants;
 import com.sms.be.constant.ErrorMessage;
 import com.sms.be.dto.response.*;
+import com.sms.be.exception.CustomerNotFound;
 import com.sms.be.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class MapperUtils {
@@ -94,7 +96,28 @@ public class MapperUtils {
                 .customer(customerToCustomerResponse(booking.getCustomer()))
                 .build();
     }
-
+    public static OrderResponse orderToOrderResponse(Order order, List<OrderDetailResponse> orderDetails) {
+        return OrderResponse.builder()
+                .orderId(order.getId())
+                .date(order.getDate() + StringUtils.SPACE)
+                .name(order.getName())
+                .email(order.getEmail())
+                .address(order.getAddress())
+                .phone(order.getPhone())
+                .orderStatus(order.getStatus())
+                .products(orderDetails)
+                .total(order.getTotal())
+                .customer(customerToCustomerResponse(order.getCustomer()))
+                .build();
+    }
+    public static OrderDetailResponse orderDetailToOrderDetailResponse(OrderDetail orderDetail) {
+        return OrderDetailResponse.builder()
+                .orderId(orderDetail.getOrder().getId())
+                .productId(orderDetail.getProduct().getId())
+                .price(orderDetail.getPrice())
+                .quantity(orderDetail.getQuantity())
+                .build();
+    }
     public static CustomerResponse customerToCustomerResponse(Customer customer) {
         return CustomerResponse.builder()
                 .customerId(customer.getId())
