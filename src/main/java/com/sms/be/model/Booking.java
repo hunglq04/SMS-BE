@@ -48,4 +48,7 @@ public class Booking extends BaseEntity {
             inverseJoinColumns = {@JoinColumn( name = "service_id")}
     )
     private List<Service> services;
+
+    @Column
+    private String walkInGuest;
 }

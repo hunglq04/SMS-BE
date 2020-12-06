@@ -21,4 +21,6 @@ public class BookingRequest {
     private String time;
     @NotNull
     private List<Long> serviceIds;
+
+    private String walkInGuest;
 }

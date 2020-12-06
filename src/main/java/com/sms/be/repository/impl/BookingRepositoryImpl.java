@@ -9,7 +9,6 @@ import com.sms.be.repository.base.AbstractCustomQuery;
 import com.sms.be.repository.custom.BookingRepositoryCustom;
 import org.springframework.data.domain.Page;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -29,8 +28,9 @@ public class BookingRepositoryImpl extends AbstractCustomQuery implements Bookin
            int pageOffset, String fromDate, Long salonId, Employee employee) {
         BooleanBuilder condition = new BooleanBuilder();
         LocalDateTime date = LocalDateTime.parse(fromDate);
-        condition.and(QBooking.booking.date.goe(date.toLocalDate()));
-        condition.and(QBooking.booking.time.goe(date.toLocalTime()));
+        condition.and(QBooking.booking.date.gt(date.toLocalDate()))
+                .or(QBooking.booking.date.eq(date.toLocalDate())
+                        .and(QBooking.booking.time.goe(date.toLocalTime())));
         List<String> roles = employee.getAccount().getRoles().stream()
                 .map(Role::getName).collect(Collectors.toList());
         if (Objects.nonNull(salonId)) {

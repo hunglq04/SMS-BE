@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MapperUtils {
@@ -85,6 +86,13 @@ public class MapperUtils {
     }
 
     public static BookingResponse bookingToBookingResponse(Booking booking) {
+        CustomerResponse customer = null;
+        String walkInGuest = null;
+        if (Objects.nonNull(booking.getCustomer())) {
+            customer = customerToCustomerResponse(booking.getCustomer());
+        } else {
+            walkInGuest = booking.getWalkInGuest();
+        }
         return BookingResponse.builder()
                 .bookingId(booking.getId())
                 .salon(mapSalonResponse(booking.getSalon()))
@@ -94,7 +102,8 @@ public class MapperUtils {
                         .collect(Collectors.toList()))
                 .bookingStatus(booking.getStatus())
                 .stylist(booking.getStylist().getName())
-                .customer(customerToCustomerResponse(booking.getCustomer()))
+                .customer(customer)
+                .walkInGuest(walkInGuest)
                 .build();
     }
 

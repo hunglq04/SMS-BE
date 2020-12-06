@@ -12,12 +12,15 @@ import com.sms.be.repository.*;
 import com.sms.be.service.core.BookingService;
 import com.sms.be.utils.MapperUtils;
 import com.sms.be.utils.SecurityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,9 +46,12 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void bookServices(BookingRequest bookingRequest) {
-        Account requester = SecurityUtils.getCurrentAccount();
-        Customer customer = customerRepository.findByAccount(requester)
-                .orElseThrow(() -> new CustomerNotFound("No customer found"));
+        Customer customer = null;
+        if (StringUtils.isBlank(bookingRequest.getWalkInGuest())) {
+            Account requester = SecurityUtils.getCurrentAccount();
+            customer = customerRepository.findByAccount(requester)
+                    .orElseThrow(() -> new CustomerNotFound("No customer found"));
+        }
         Employee stylist = employeeRepository.findEmployeeByIdAndRole(
                 bookingRequest.getStylistId(), CommonConstants.ROLE_STYLIST)
                 .orElseThrow(() -> new EmployeeNotFound("No stylist found"));
@@ -61,6 +67,7 @@ public class BookingServiceImpl implements BookingService {
                 .salon(salon)
                 .services(services)
                 .status(BookingStatus.WAITING)
+                .walkInGuest(bookingRequest.getWalkInGuest())
                 .build();
         bookingRepository.save(booking);
     }
