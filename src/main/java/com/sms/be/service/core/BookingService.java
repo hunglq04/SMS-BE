@@ -11,4 +11,5 @@ public interface BookingService {
     List<BookingResponse> getBookingHistoryByCustomer();
     Page<BookingResponse> getBookingPageByDateAndSalon(int pageSize, int pageOffset, String fromDate, Long salonId);
     void deleteBooking(Long id);
+    Long invoice(Long bookingId);
 }

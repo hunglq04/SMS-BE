@@ -6,10 +6,6 @@ import com.sms.be.model.OrderDetail;
 import com.sms.be.model.Product;
 import com.sms.be.model.Service;
 import com.sms.be.service.core.*;
-import com.sms.be.service.impl.BookingServiceImpl;
-import com.sms.be.service.impl.EmployeeServiceImpl;
-import com.sms.be.service.impl.SalonServiceImpl;
-import com.sms.be.service.impl.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +23,7 @@ import java.util.Optional;
 public class ClientController {
 
     @Autowired
-    private SalonServiceImpl salonService;
+    private SalonService salonService;
 
     @Autowired
     private ProvinceService provinceService;
@@ -37,7 +32,7 @@ public class ClientController {
     private DistrictService districtService;
     
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private EmployeeService employeeService;
 
     @Autowired
     private ServiceService serviceService;
@@ -62,7 +57,7 @@ public class ClientController {
     }
 
     @GetMapping("/provinces/{provinceId}/districts")
-    public List<DistrictResponse> getDistrictAndWards(@Valid @PathVariable(name = "provinceId") Long provinceId) throws ProvinceNotFoundException {
+    public List<DistrictResponse> getDistrictAndWards(@Valid @PathVariable(name = "provinceId") Long provinceId) {
         return districtService.getDistrictsAndWardsByProvinceId(provinceId);
     }
 

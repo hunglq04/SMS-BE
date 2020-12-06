@@ -2,6 +2,7 @@ package com.sms.be.controller;
 
 import com.sms.be.dto.ManagerInfoDto;
 import com.sms.be.dto.request.ProductRequest;
+import com.sms.be.dto.request.BookingRequest;
 import com.sms.be.dto.request.SalonRequest;
 import com.sms.be.dto.request.ServiceRequest;
 import com.sms.be.dto.response.*;
@@ -15,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Optional;
 
@@ -131,8 +133,21 @@ public class InternalController {
     }
 
     @GetMapping("/salon/manager")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_CASHIER')")
     public ResponseEntity<List<SalonResponse>> getAllSalon() {
         return ResponseEntity.ok(salonService.getSalonByRole());
+    }
+
+    @PostMapping("/booking")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_CASHIER')")
+    public ResponseEntity<Void> booking(@Valid @RequestBody BookingRequest bookingRequest) {
+        bookingService.bookServices(bookingRequest);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/booking/{id}/invoice")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_CASHIER')")
+    public ResponseEntity<Long> invoice(@Valid @PathVariable(name = "id") Long bookingId) {
+        return ResponseEntity.ok().body(bookingService.invoice(bookingId));
     }
 }

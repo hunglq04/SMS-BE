@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MapperUtils {
@@ -80,10 +82,19 @@ public class MapperUtils {
         salonResponse.setWard(String.join(StringUtils.SPACE, salon.getWard().getPrefix(), salon.getWard().getName()));
         salonResponse.setProvince(salon.getProvince().getName());
         salonResponse.setImage(salon.getImage());
+        salonResponse.setStylishResponses(new ArrayList<>());
+        salonResponse.setServices(new ArrayList<>());
         return salonResponse;
     }
 
     public static BookingResponse bookingToBookingResponse(Booking booking) {
+        CustomerResponse customer = null;
+        String walkInGuest = null;
+        if (Objects.nonNull(booking.getCustomer())) {
+            customer = customerToCustomerResponse(booking.getCustomer());
+        } else {
+            walkInGuest = booking.getWalkInGuest();
+        }
         return BookingResponse.builder()
                 .bookingId(booking.getId())
                 .salon(mapSalonResponse(booking.getSalon()))
@@ -93,7 +104,8 @@ public class MapperUtils {
                         .collect(Collectors.toList()))
                 .bookingStatus(booking.getStatus())
                 .stylist(booking.getStylist().getName())
-                .customer(customerToCustomerResponse(booking.getCustomer()))
+                .customer(customer)
+                .walkInGuest(walkInGuest)
                 .build();
     }
     public static OrderResponse orderToOrderResponse(Order order, List<OrderDetailResponse> orderDetails) {

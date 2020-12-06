@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface SalonService {
+    public List<SalonResponse> findAll();
     void addNewSalon(SalonRequest salonRequest);
     Page<SalonInternalResponse> getSalonPage(int pageOffset, int pageSize);
     List<SalonResponse> getSalonByRole();

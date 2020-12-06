@@ -1,31 +1,22 @@
 package com.sms.be.service.impl;
 
 import com.sms.be.constant.CommonConstants;
+import com.sms.be.dto.ManagerInfoDto;
 import com.sms.be.dto.response.StylishInfo;
 import com.sms.be.dto.response.StylishResponse;
 import com.sms.be.model.Employee;
 import com.sms.be.repository.BookingRepository;
 import com.sms.be.repository.EmployeeRepository;
 import com.sms.be.service.core.EmployeeService;
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.BeanUtils;
-import com.sms.be.dto.ManagerInfoDto;
-import com.sms.be.model.Employee;
-import com.sms.be.repository.EmployeeRepository;
-import com.sms.be.service.core.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +29,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private BookingRepository bookingRepository;
 
+    @Override
     public List<StylishResponse> getStylishResponse(Long salonId, String date) {
         List<Employee> lstEmployee = employeeRepository.findAllBySalonAndRole(
                 salonId, CommonConstants.ROLE_STYLIST);

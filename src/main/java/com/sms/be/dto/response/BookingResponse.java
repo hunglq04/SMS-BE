@@ -19,4 +19,5 @@ public class BookingResponse {
     private BookingStatus bookingStatus;
     private String stylist;
     private CustomerResponse customer;
+    private String walkInGuest;
 }

@@ -48,4 +48,12 @@ public class Booking extends BaseEntity {
             inverseJoinColumns = {@JoinColumn( name = "service_id")}
     )
     private List<Service> services;
+
+    @Column
+    private String walkInGuest;
+
+    public Long getTotalPrice() {
+        return this.services.stream().map(Service::getPrice)
+                .reduce(Long::sum).orElse(0L);
+    }
 }

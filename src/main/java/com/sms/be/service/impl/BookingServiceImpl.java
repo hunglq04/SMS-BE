@@ -4,6 +4,7 @@ import com.sms.be.constant.BookingStatus;
 import com.sms.be.constant.CommonConstants;
 import com.sms.be.dto.request.BookingRequest;
 import com.sms.be.dto.response.BookingResponse;
+import com.sms.be.exception.BookingNotFoundException;
 import com.sms.be.exception.CustomerNotFound;
 import com.sms.be.exception.EmployeeNotFound;
 import com.sms.be.exception.SalonNotFoundException;
@@ -12,14 +13,17 @@ import com.sms.be.repository.*;
 import com.sms.be.service.core.BookingService;
 import com.sms.be.utils.MapperUtils;
 import com.sms.be.utils.SecurityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,11 +45,17 @@ public class BookingServiceImpl implements BookingService {
     @Autowired
     private SalonRepository salonRepository;
 
+    @Autowired
+    private BillRepository billRepository;
+
     @Override
     public void bookServices(BookingRequest bookingRequest) {
-        Account requester = SecurityUtils.getCurrentAccount();
-        Customer customer = customerRepository.findByAccount(requester)
-                .orElseThrow(() -> new CustomerNotFound("No customer found"));
+        Customer customer = null;
+        if (StringUtils.isBlank(bookingRequest.getWalkInGuest())) {
+            Account requester = SecurityUtils.getCurrentAccount();
+            customer = customerRepository.findByAccount(requester)
+                    .orElseThrow(() -> new CustomerNotFound("No customer found"));
+        }
         Employee stylist = employeeRepository.findEmployeeByIdAndRole(
                 bookingRequest.getStylistId(), CommonConstants.ROLE_STYLIST)
                 .orElseThrow(() -> new EmployeeNotFound("No stylist found"));
@@ -68,6 +78,7 @@ public class BookingServiceImpl implements BookingService {
                 .salon(salon)
                 .services(services)
                 .status(BookingStatus.WAITING)
+                .walkInGuest(bookingRequest.getWalkInGuest())
                 .build();
         bookingRepository.save(booking);
     }
@@ -86,12 +97,32 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Page<BookingResponse> getBookingPageByDateAndSalon(
             int pageSize, int pageOffset, String fromDate, Long salonId) {
-        return bookingRepository.getBookingPageFromDateBySalon(pageSize, pageOffset, fromDate, salonId)
+        Employee requester = employeeRepository.findByAccount(SecurityUtils.getCurrentAccount())
+                .orElseThrow(() -> new EmployeeNotFound("No employee found"));
+        return bookingRepository.getBookingPageFromDateBySalon(pageSize, pageOffset, fromDate, salonId, requester)
                 .map(MapperUtils::bookingToBookingResponse);
     }
 
     @Override
     public void deleteBooking(Long id) {
         bookingRepository.deleteById(id);
+    }
+    public Long invoice(Long bookingId) {
+        Account requester = SecurityUtils.getCurrentAccount();
+        Employee cashier = employeeRepository.findByAccount(requester)
+                .orElseThrow(() -> new EmployeeNotFound("No Cashier found"));
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(BookingNotFoundException::new);
+        booking.setStatus(BookingStatus.DONE);
+        bookingRepository.save(booking);
+        Bill bill = Bill.builder()
+                .booking(booking)
+                .cashier(cashier)
+                .customer(booking.getCustomer())
+                .dateTime(LocalDateTime.now())
+                .total(booking.getTotalPrice())
+                .build();
+        billRepository.saveAndFlush(bill);
+        return bill.getId();
     }
 }

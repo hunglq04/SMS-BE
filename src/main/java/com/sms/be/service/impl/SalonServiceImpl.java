@@ -3,6 +3,7 @@ package com.sms.be.service.impl;
 import com.sms.be.dto.request.SalonRequest;
 import com.sms.be.dto.response.SalonInternalResponse;
 import com.sms.be.dto.response.SalonResponse;
+import com.sms.be.dto.response.StylishResponse;
 import com.sms.be.exception.AddressNotFound;
 import com.sms.be.exception.EmployeeNotFound;
 import com.sms.be.model.Account;
@@ -11,7 +12,9 @@ import com.sms.be.model.Salon;
 import com.sms.be.model.Ward;
 import com.sms.be.repository.EmployeeRepository;
 import com.sms.be.repository.SalonRepository;
+import com.sms.be.repository.ServiceRepository;
 import com.sms.be.repository.WardRepository;
+import com.sms.be.service.core.EmployeeService;
 import com.sms.be.service.core.SalonService;
 import com.sms.be.utils.MapperUtils;
 import com.sms.be.utils.SecurityUtils;
@@ -20,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +40,13 @@ public class SalonServiceImpl implements SalonService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private EmployeeService employeeService;
+
+    @Autowired
+    private ServiceRepository serviceRepository;
+
+    @Override
     public List<SalonResponse> findAll() {
         final List<Salon> lstSalon = salonRepository.findAll();
         return lstSalon.stream().map(MapperUtils::mapSalonResponse)
@@ -70,9 +81,11 @@ public class SalonServiceImpl implements SalonService {
     public List<SalonResponse> getSalonByRole() {
         Account requester = SecurityUtils.getCurrentAccount();
         Employee employee = employeeRepository.findByAccount(requester)
-                .orElseThrow(() -> new EmployeeNotFound("No manager found"));
+                .orElseThrow(() -> new EmployeeNotFound("No employee found"));
         return salonRepository.getSalonByRole(employee).stream()
                 .map(MapperUtils::mapSalonResponse)
+                .peek(salon -> salon.setStylishResponses(employeeService.getStylishResponse(
+                            salon.getId(), LocalDate.now().toString())))
                 .collect(Collectors.toList());
     }
 }
