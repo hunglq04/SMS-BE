@@ -73,7 +73,7 @@ public class MapperUtils {
                 .productType(product.getProductType().getName())
                 .build();
     }
-    
+
     public static SalonResponse mapSalonResponse(Salon salon) {
         SalonResponse salonResponse = new SalonResponse();
         salonResponse.setId(salon.getId());
@@ -108,6 +108,7 @@ public class MapperUtils {
                 .walkInGuest(walkInGuest)
                 .build();
     }
+
     public static OrderResponse orderToOrderResponse(Order order, List<OrderDetailResponse> orderDetails) {
         return OrderResponse.builder()
                 .orderId(order.getId())
@@ -122,6 +123,7 @@ public class MapperUtils {
                 .customer(customerToCustomerResponse(order.getCustomer()))
                 .build();
     }
+
     public static OrderDetailResponse orderDetailToOrderDetailResponse(OrderDetail orderDetail) {
         return OrderDetailResponse.builder()
                 .orderId(orderDetail.getOrder().getId())
@@ -130,6 +132,7 @@ public class MapperUtils {
                 .quantity(orderDetail.getQuantity())
                 .build();
     }
+
     public static CustomerResponse customerToCustomerResponse(Customer customer) {
         return CustomerResponse.builder()
                 .customerId(customer.getId())
@@ -138,5 +141,21 @@ public class MapperUtils {
                 .name(customer.getName())
                 .build();
     }
-    
+
+    public static StylistSchedulerResponse bookingToStylistSchedulerResponse(Booking booking) {
+        StylistSchedulerResponse scheduler = StylistSchedulerResponse.builder()
+                .id(booking.getId())
+                .customer(booking.getCustomer().getName())
+                .services(booking.getServices().stream()
+                        .map(MapperUtils::serviceToServiceBookingResponse)
+                        .collect(Collectors.toList()))
+                .status(booking.getStatus())
+                .start(booking.getDate().toString() + "T" + booking.getTime().toString())
+                .build();
+        Integer duration = scheduler.getServices().stream().map(ServiceBookingResponse::getDuration)
+                .reduce(Integer::sum).orElse(0);
+        scheduler.setEnd(booking.getDate().toString() + "T" + booking.getTime().plusMinutes(duration).toString());
+        return scheduler;
+    }
+
 }

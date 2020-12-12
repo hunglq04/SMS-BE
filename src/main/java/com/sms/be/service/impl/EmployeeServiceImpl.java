@@ -4,10 +4,16 @@ import com.sms.be.constant.CommonConstants;
 import com.sms.be.dto.ManagerInfoDto;
 import com.sms.be.dto.response.StylishInfo;
 import com.sms.be.dto.response.StylishResponse;
+import com.sms.be.dto.response.StylistSchedulerResponse;
+import com.sms.be.exception.EmployeeNotFound;
+import com.sms.be.model.Account;
 import com.sms.be.model.Employee;
 import com.sms.be.repository.BookingRepository;
 import com.sms.be.repository.EmployeeRepository;
 import com.sms.be.service.core.EmployeeService;
+import com.sms.be.utils.MapperUtils;
+import com.sms.be.utils.SecurityUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +61,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<StylistSchedulerResponse> getStylistScheduler(Employee stylist, String strDate) {
+        //get all booking of stylist with month between (month +1 and -1)
+        LocalDate date = LocalDate.parse(strDate);
+        return bookingRepository
+                .findByStylistAndDateAfterAndDateBefore(ObjectUtils.defaultIfNull(stylist, getCurrentStylist()),
+                        date.minusDays(40), date.plusDays(40)).stream()
+                .map(MapperUtils::bookingToStylistSchedulerResponse).collect(Collectors.toList());
+    }
+
+    @Override
     public List<ManagerInfoDto> getAllManagerInfos() {
         return employeeRepository.getAllManagerInfos();
+    }
+
+    public Employee getCurrentStylist() {
+        Account requester = SecurityUtils.getCurrentAccount();
+        return employeeRepository.findByAccount(requester).orElseThrow(EmployeeNotFound::new);
     }
 }
