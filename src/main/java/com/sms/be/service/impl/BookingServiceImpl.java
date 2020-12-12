@@ -115,13 +115,14 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(BookingNotFoundException::new);
         booking.setStatus(BookingStatus.DONE);
         bookingRepository.save(booking);
-        Bill bill = Bill.builder()
+        Bill bill = billRepository.findByBooking(booking).orElse(
+                Bill.builder()
                 .booking(booking)
                 .cashier(cashier)
                 .customer(booking.getCustomer())
                 .dateTime(LocalDateTime.now())
                 .total(booking.getTotalPrice())
-                .build();
+                .build());
         billRepository.saveAndFlush(bill);
         return bill.getId();
     }
