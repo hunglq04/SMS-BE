@@ -2,6 +2,7 @@ package com.sms.be.service.impl;
 
 import com.sms.be.constant.BookingStatus;
 import com.sms.be.constant.CommonConstants;
+import com.sms.be.dto.RatingImageDto;
 import com.sms.be.dto.request.BookingRequest;
 import com.sms.be.dto.response.BookingResponse;
 import com.sms.be.exception.BookingNotFoundException;
@@ -47,6 +48,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Autowired
     private BillRepository billRepository;
+
+    @Autowired
+    private RatingRepository ratingRepository;
 
     @Override
     public void bookServices(BookingRequest bookingRequest) {
@@ -125,5 +129,28 @@ public class BookingServiceImpl implements BookingService {
                 .build());
         billRepository.saveAndFlush(bill);
         return bill.getId();
+    }
+
+    @Override
+    public BookingResponse startProgress(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(BookingNotFoundException::new);
+        booking.setStatus(BookingStatus.IN_PROGRESS);
+        return MapperUtils.bookingToBookingResponse(booking);
+    }
+
+    @Override
+    public void finishProgress(Long bookingId, RatingImageDto images) {
+        Account account = SecurityUtils.getCurrentAccount();
+        Employee stylist = employeeRepository.findByAccount(account).orElseThrow(EmployeeNotFound::new);
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(BookingNotFoundException::new);
+        Rating rating = booking.getImages() != null ? booking.getImages() : new Rating();
+        rating.setImage1(images.getImage1());
+        rating.setImage2(images.getImage2());
+        rating.setImage3(images.getImage3());
+        rating.setImage4(images.getImage4());
+        rating.setBooking(booking);
+        rating.setCreatedBy(stylist);
+        ratingRepository.save(rating);
     }
 }

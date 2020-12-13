@@ -10,6 +10,7 @@ import com.sms.be.repository.custom.BookingRepositoryCustom;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -17,7 +18,8 @@ import java.util.stream.Collectors;
 public class BookingRepositoryImpl extends AbstractCustomQuery implements BookingRepositoryCustom {
     @Override
     public List<Booking> findBookingHistoryByCustomer(Customer customer) {
-        return new JPAQuery<>(entityManager).from(QBooking.booking)
+        return customer == null ? Collections.emptyList() :
+                new JPAQuery<>(entityManager).from(QBooking.booking)
                 .where(QBooking.booking.customer.eq(customer))
                 .select(QBooking.booking)
                 .fetch();

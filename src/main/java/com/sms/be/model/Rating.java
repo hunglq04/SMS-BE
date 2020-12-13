@@ -40,4 +40,7 @@ public class Rating extends BaseEntity {
             inverseJoinColumns = {@JoinColumn(name = "customer_id")}
     )
     private List<Customer> customers;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private Booking booking;
 }

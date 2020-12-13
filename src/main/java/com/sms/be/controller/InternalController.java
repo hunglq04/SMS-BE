@@ -1,6 +1,7 @@
 package com.sms.be.controller;
 
 import com.sms.be.dto.ManagerInfoDto;
+import com.sms.be.dto.RatingImageDto;
 import com.sms.be.dto.request.ProductRequest;
 import com.sms.be.dto.request.BookingRequest;
 import com.sms.be.dto.request.SalonRequest;
@@ -150,6 +151,18 @@ public class InternalController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_CASHIER')")
     public ResponseEntity<Long> invoice(@Valid @PathVariable(name = "id") Long bookingId) {
         return ResponseEntity.ok().body(bookingService.invoice(bookingId));
+    }
+
+    @PostMapping("/booking/{id}/start")
+    public ResponseEntity<BookingResponse> startProgress(@Valid @PathVariable(name = "id") Long bookingId) {
+        return ResponseEntity.ok().body(bookingService.startProgress(bookingId));
+    }
+
+    @PostMapping("/booking/{id}/finish")
+    public ResponseEntity<Void> finishProgress(@Valid @PathVariable(name = "id") Long bookingId, @RequestBody
+            RatingImageDto images) {
+        bookingService.finishProgress(bookingId, images);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("employee/stylist/scheduler")

@@ -143,14 +143,24 @@ public class MapperUtils {
     }
 
     public static StylistSchedulerResponse bookingToStylistSchedulerResponse(Booking booking) {
+        String customerName = booking.getCustomer() == null ?
+                booking.getWalkInGuest() : booking.getCustomer().getName();
+        String image1 = null, image2 = null, image3 = null, image4 = null;
+        if (booking.getImages() != null) {
+            image1 = booking.getImages().getImage1();
+            image2 = booking.getImages().getImage2();
+            image3 = booking.getImages().getImage3();
+            image4 = booking.getImages().getImage4();
+        }
         StylistSchedulerResponse scheduler = StylistSchedulerResponse.builder()
                 .id(booking.getId())
-                .customer(booking.getCustomer().getName())
+                .customer(customerName)
                 .services(booking.getServices().stream()
                         .map(MapperUtils::serviceToServiceBookingResponse)
                         .collect(Collectors.toList()))
                 .status(booking.getStatus())
                 .start(booking.getDate().toString() + "T" + booking.getTime().toString())
+                .image1(image1).image2(image2).image3(image3).image4(image4)
                 .build();
         Integer duration = scheduler.getServices().stream().map(ServiceBookingResponse::getDuration)
                 .reduce(Integer::sum).orElse(0);

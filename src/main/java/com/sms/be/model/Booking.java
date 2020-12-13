@@ -56,4 +56,7 @@ public class Booking extends BaseEntity {
         return this.services.stream().map(Service::getPrice)
                 .reduce(Long::sum).orElse(0L);
     }
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "booking")
+    private Rating images;
 }
