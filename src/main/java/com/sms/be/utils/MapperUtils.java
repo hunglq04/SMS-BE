@@ -125,7 +125,7 @@ public class MapperUtils {
     public static OrderDetailResponse orderDetailToOrderDetailResponse(OrderDetail orderDetail) {
         return OrderDetailResponse.builder()
                 .orderId(orderDetail.getOrder().getId())
-                .productId(orderDetail.getProduct().getId())
+                .product(orderDetail.getProduct())
                 .price(orderDetail.getPrice())
                 .quantity(orderDetail.getQuantity())
                 .build();

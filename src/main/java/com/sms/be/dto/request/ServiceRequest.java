@@ -22,6 +22,8 @@ public class ServiceRequest {
     @NotNull
     private String description;
     @NotNull
+    private String descriptionImage;
+    @NotNull
     private String bookingRecommendImage;
     @NotNull
     private Long price;

@@ -37,6 +37,7 @@ public class ServiceServiceImpl implements ServiceService {
                .price(serviceRequest.getPrice())
                .image(serviceRequest.getBookingImage())
                .description(serviceRequest.getDescription())
+               .descriptionImage(serviceRequest.getDescriptionImage())
                .duration(serviceRequest.getDuration())
                .isRecommend(serviceRequest.isRecommend())
                .bookingRecommendImage(serviceRequest.getBookingRecommendImage())
@@ -71,6 +72,7 @@ public class ServiceServiceImpl implements ServiceService {
         services.get().setBookingImage(serviceRequest.getBookingImage());
         services.get().setBookingRecommendImage(serviceRequest.getBookingRecommendImage());
         services.get().setDescription(serviceRequest.getDescription());
+        services.get().setDescriptionImage(serviceRequest.getDescriptionImage());
         services.get().setPrice(serviceRequest.getPrice());
         services.get().setRecommend(serviceRequest.isRecommend());
         services.get().setDescription(serviceRequest.getDescription());

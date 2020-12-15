@@ -22,6 +22,9 @@ public class Service extends BaseEntity {
     private String description;
 
     @Column
+    private String descriptionImage;
+
+    @Column
     private Long price;
 
     @Column
