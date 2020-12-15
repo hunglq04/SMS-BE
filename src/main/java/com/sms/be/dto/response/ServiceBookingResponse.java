@@ -14,6 +14,7 @@ public class ServiceBookingResponse {
     private String name;
     private String bookingImage;
     private String description;
+    private String descriptionImage;
     private String bookingRecommendImage;
     private Long price;
     private Integer duration;

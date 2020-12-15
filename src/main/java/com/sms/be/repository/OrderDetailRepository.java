@@ -10,9 +10,5 @@ import java.util.List;
 
 @Repository
 public interface OrderDetailRepository extends BaseRepository<OrderDetail, OrderDetailId> {
-    @Query (
-            value = "select * from order_detail od where order_id = 120 ",
-            nativeQuery = true
-    )
     List<OrderDetail> findByOrderId(Long orderId);
 }
