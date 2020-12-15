@@ -16,8 +16,11 @@ public enum ErrorMessage {
     EMPLOYEE_NOT_FOUND(404),
     ADDRESS_NOT_FOUND(404),
     ORDER_NOT_FOUND(404),
+    SETTING_NOT_FOUND(404),
     USERNAME_ALREADY_EXIST(409 ),
+    SEND_MAIL_FAIL(500),
     UNEXPECTED_ERROR(500), ;
+
     @Getter
     private final int value;
 
