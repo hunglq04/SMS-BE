@@ -18,10 +18,15 @@ import com.sms.be.service.core.OrderService;
 import com.sms.be.utils.MapperUtils;
 import com.sms.be.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -76,6 +81,12 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetailResponse> orderDetails = orderDetailRepository.findByOrderId(orderId).stream()
                 .map(MapperUtils::orderDetailToOrderDetailResponse).collect(Collectors.toList());
         return MapperUtils.orderToOrderResponse(order, orderDetails);
+    }
+
+    @Override
+    public Page<OrderResponse> getOrderPageByDate(int pageSize, int pageOffset, String fromDate) {
+      return orderRepository.getOrderPageByDate(pageSize, pageOffset, fromDate).map(
+              (Order order) -> MapperUtils.orderToOrderResponse(order, Collections.emptyList()));
     }
 
     private void saveCartItem(CartItem item, Order order) {

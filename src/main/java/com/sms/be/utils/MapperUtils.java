@@ -87,6 +87,21 @@ public class MapperUtils {
         return salonResponse;
     }
 
+    public static EmployeeResponse employeeToEmployeeResponse(Employee employee)
+    {
+        return EmployeeResponse.builder()
+                .id(employee.getId())
+                .name(employee.getName())
+                .address(employee.getAddress())
+                .phoneNumber(employee.getPhoneNumber())
+                .idCard(employee.getIdCard())
+                .avatar(employee.getAvatar())
+                .avgRating(employee.getAvgRating())
+                .salon(mapSalonResponse(employee.getSalon()))
+                .account(employee.getAccount())
+                .build();
+    }
+
     public static BookingResponse bookingToBookingResponse(Booking booking) {
         CustomerResponse customer = null;
         String walkInGuest = null;

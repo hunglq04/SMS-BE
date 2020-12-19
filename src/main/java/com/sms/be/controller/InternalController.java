@@ -8,6 +8,7 @@ import com.sms.be.dto.request.SalonRequest;
 import com.sms.be.dto.request.ServiceRequest;
 import com.sms.be.dto.response.*;
 import com.sms.be.model.Product;
+import com.sms.be.model.Service;
 import com.sms.be.service.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -47,6 +48,7 @@ public class InternalController {
     @Autowired
     private ServiceTypeService serviceTypeService;
 
+    @Autowired OrderService orderService;
     @GetMapping("/employee/managers")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<ManagerInfoDto>> getAllManagers() {
@@ -102,6 +104,13 @@ public class InternalController {
         return productTypeService.getAllProductType();
     }
 
+    @GetMapping("/service")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Page<ServiceBookingResponse>> getServicePage(int pageOffset, int pageSize) {
+        return ResponseEntity.ok(serviceService.getServicePage(pageOffset,
+                pageSize));
+    }
+
     @PostMapping("/service")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> addNewService(@Valid @RequestBody ServiceRequest request) {
@@ -132,6 +141,12 @@ public class InternalController {
             int pageOffset, int pageSize, String fromDate, Long salonId) {
         return ResponseEntity.ok(bookingService.getBookingPageByDateAndSalon(
                 pageSize, pageOffset, fromDate, salonId));
+    }
+    @GetMapping("/employee")
+    public ResponseEntity<Page<EmployeeResponse>> getEmployeePage(
+            int pageOffset, int pageSize, Long salonId) {
+        return ResponseEntity.ok(employeeService.getEmployeeBySalon(
+                pageSize, pageOffset, salonId));
     }
 
     @GetMapping("/salon/manager")
@@ -168,5 +183,15 @@ public class InternalController {
     @GetMapping("employee/stylist/scheduler")
     public ResponseEntity<List<StylistSchedulerResponse>> getStylistScheduler(String date) {
         return ResponseEntity.ok().body(employeeService.getStylistScheduler(null, date));
+    }
+    @GetMapping("order")
+    public ResponseEntity<Page<OrderResponse>> getOrderPage(
+            int pageOffset, int pageSize, String fromDate) {
+        return ResponseEntity.ok(orderService.getOrderPageByDate(
+                pageSize, pageOffset, fromDate));
+    }
+        @GetMapping("order/{orderId}")
+    public ResponseEntity<OrderResponse> getOrderDetailPage(Long orderId) {
+        return ResponseEntity.ok(orderService.getOrderDetail(orderId));
     }
 }
