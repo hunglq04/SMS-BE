@@ -9,8 +9,10 @@ import com.sms.be.model.Employee;
 import com.sms.be.model.QAccount;
 import com.sms.be.model.QEmployee;
 import com.sms.be.model.QRole;
+import com.sms.be.model.QSalon;
 import com.sms.be.repository.base.AbstractCustomQuery;
 import com.sms.be.repository.custom.EmployeeRepositoryCustom;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,5 +61,20 @@ public class EmployeeRepositoryImpl extends AbstractCustomQuery implements Emplo
                 .where(employee.salon.id.eq(salonId))
                 .select(employee)
                 .fetch();
+    }
+
+    @Override
+    public Page<Employee> getEmployeeBySalon(int pageOffset, int pageSize, Long salonId) {
+        QEmployee employee = new QEmployee("employee");
+        QRole qRole = new QRole("employee_role");
+        QAccount account = new QAccount("account");
+        JPQLQuery<Employee> query = new JPAQuery<>(entityManager)
+                .from(QEmployee.employee)
+                .innerJoin(QEmployee.employee.account, account)
+                .innerJoin(account.roles, qRole)
+//                .where(qRole.name.eq(role))
+                .where(employee.salon.id.eq(salonId))
+                .select(employee);
+        return getPage(query, pageOffset, pageSize);
     }
 }

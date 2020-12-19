@@ -2,6 +2,7 @@ package com.sms.be.service.impl;
 
 import com.sms.be.constant.CommonConstants;
 import com.sms.be.dto.ManagerInfoDto;
+import com.sms.be.dto.response.EmployeeResponse;
 import com.sms.be.dto.response.StylishInfo;
 import com.sms.be.dto.response.StylishResponse;
 import com.sms.be.dto.response.StylistSchedulerResponse;
@@ -16,6 +17,7 @@ import com.sms.be.utils.SecurityUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +60,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return lstStylishResponse;
+    }
+
+    @Override
+    public Page<EmployeeResponse> getEmployeeBySalon(int pageOffset, int pageSize, Long salonId) {
+        return employeeRepository.getEmployeeBySalon(pageSize, pageOffset, salonId)
+                .map(MapperUtils::employeeToEmployeeResponse);
     }
 
     @Override

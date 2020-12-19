@@ -32,7 +32,7 @@ public class Employee extends BaseEntity {
     private Long salary;
 
     @Column
-    private Double avgRating;
+    private Long avgRating;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Salon salon;
