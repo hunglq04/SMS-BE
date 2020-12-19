@@ -9,6 +9,7 @@ import com.sms.be.model.QOrder;
 import com.sms.be.model.QOrderDetail;
 import com.sms.be.model.QProduct;
 import com.sms.be.model.QService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -48,7 +49,7 @@ public abstract class AbstractCustomQuery {
 
     protected BooleanBuilder buildDateCondition(String date, String monthYear, Integer year, DateTimePath<LocalDateTime> toCompare) {
         BooleanBuilder conditions = new BooleanBuilder();
-        if (date != null ) {
+        if (StringUtils.isNotBlank(date)) {
             LocalDateTime fromDate = LocalDateTime.of(LocalDate.parse(date), LocalTime.MIN);
             LocalDateTime toDate = LocalDateTime.of(LocalDate.parse(date), LocalTime.MAX);
             conditions.and(toCompare.between(fromDate, toDate));
@@ -60,7 +61,7 @@ public abstract class AbstractCustomQuery {
 
     protected BooleanBuilder buildDateConditionForChart (String date, String monthYear, Integer year, DateTimePath<LocalDateTime> toCompare) {
         BooleanBuilder conditions = new BooleanBuilder();
-        if (date != null ) {
+        if (StringUtils.isNotBlank(date)) {
             LocalDateTime fromDate = LocalDateTime.of(LocalDate.parse(date).with(DayOfWeek.MONDAY), LocalTime.MIN);
             LocalDateTime toDate = LocalDateTime.of(LocalDate.parse(date).with(DayOfWeek.MONDAY).plusDays(7), LocalTime.MIN);
             conditions.and(toCompare.between(fromDate, toDate));
@@ -71,7 +72,7 @@ public abstract class AbstractCustomQuery {
 
     private void buildMonthYearCondition(String monthYear, Integer year, DateTimePath<LocalDateTime> toCompare,
             BooleanBuilder conditions) {
-        if (monthYear != null ) {
+        if (StringUtils.isNotBlank(monthYear) ) {
             LocalDateTime fromDate = LocalDateTime
                     .of(LocalDate.parse(monthYear).with(TemporalAdjusters.firstDayOfMonth()), LocalTime.MIN);
             LocalDateTime toDate = LocalDateTime

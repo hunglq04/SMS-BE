@@ -7,6 +7,7 @@ import com.sms.be.model.Order;
 import com.sms.be.model.QOrder;
 import com.sms.be.repository.base.AbstractCustomQuery;
 import com.sms.be.repository.custom.OrderRepositoryCustom;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.time.Year;
@@ -49,7 +50,7 @@ public class OrderRepositoryImpl extends AbstractCustomQuery implements OrderRep
                 .where(buildDateConditionForChart(date, monthYear, year, order.dateTime))
                 .groupBy(dateGroup).select(dateGroup, order.total.count())
                 .transform(groupBy(dateGroup).as(order.total.sum()));
-        return date == null ? result :
+        return StringUtils.isBlank(date) ? result :
                 result.entrySet().stream().collect(Collectors
                         .toMap(e -> Year.of(LocalDate.parse(date).getYear()).atMonth(LocalDate.parse(date).getMonth())
                                 .atDay(e.getKey()).getDayOfWeek().getValue(), Map.Entry::getValue));

@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.sms.be.repository.base.AbstractCustomQuery;
 import com.sms.be.repository.custom.BillRepositoryCustom;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.time.Year;
@@ -40,7 +41,7 @@ public class BillRepositoryImpl extends AbstractCustomQuery implements BillRepos
                 .where(buildChartCondition(salonId, date, monthYear, year))
                 .groupBy(dateGroup).select(dateGroup, bill.total.count())
                 .transform(groupBy(dateGroup).as(bill.total.sum()));
-        return date == null ? result :
+        return StringUtils.isBlank(date) ? result :
                 result.entrySet().stream().collect(Collectors
                         .toMap(e -> Year.of(LocalDate.parse(date).getYear()).atMonth(LocalDate.parse(date).getMonth())
                                 .atDay(e.getKey()).getDayOfWeek().getValue(), Map.Entry::getValue));
