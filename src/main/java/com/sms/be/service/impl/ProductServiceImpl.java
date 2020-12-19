@@ -40,7 +40,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductResponse> getProductPage(int pageOffset, int pageSize) {
-        return null;
+        return productRepository.getProductPage(pageOffset, pageSize)
+                .map(MapperUtils::productToProductResponse);
     }
 
     @Override
