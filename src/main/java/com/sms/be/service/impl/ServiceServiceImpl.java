@@ -13,6 +13,7 @@ import com.sms.be.repository.ServiceTypeRepository;
 import com.sms.be.service.core.ServiceService;
 import com.sms.be.utils.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class ServiceServiceImpl implements ServiceService {
        ServiceType serviceType = serviceTypeRepository.findById(serviceRequest.getServiceTypeId())
                .orElseThrow(() -> new ServiceTypeNotFound("No service type found"));
        Service service = Service.builder()
+               .serviceType(serviceType)
                .name(serviceRequest.getName())
                .bookingImage(serviceRequest.getBookingImage())
                .price(serviceRequest.getPrice())
@@ -41,7 +43,6 @@ public class ServiceServiceImpl implements ServiceService {
                .duration(serviceRequest.getDuration())
                .isRecommend(serviceRequest.isRecommend())
                .bookingRecommendImage(serviceRequest.getBookingRecommendImage())
-               .serviceType(serviceType)
                .build();
        serviceRepository.save(service);
     }
@@ -52,6 +53,13 @@ public class ServiceServiceImpl implements ServiceService {
         return services.stream().map(MapperUtils::serviceToServiceBookingResponse)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Page<ServiceBookingResponse> getServicePage(int pageOffset, int pageSize) {
+        return serviceRepository.getServicePage(pageOffset, pageSize)
+                .map(MapperUtils::serviceToServiceBookingResponse);
+    }
+
     @Override
     public Optional<Service> getService(Long id){
         return serviceRepository.findById(id);
