@@ -9,7 +9,6 @@ import com.sms.be.exception.CustomerNotFound;
 import com.sms.be.exception.OrderNotFound;
 import com.sms.be.exception.ProductNotFound;
 import com.sms.be.model.*;
-import com.sms.be.model.embedded.OrderDetailId;
 import com.sms.be.repository.CustomerRepository;
 import com.sms.be.repository.OrderDetailRepository;
 import com.sms.be.repository.OrderRepository;
@@ -21,9 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
         Customer customer = customerRepository.findByAccount(requester)
                 .orElseThrow(() -> new CustomerNotFound("No customer found"));
         Order oder = Order.builder()
-                .date(LocalDate.parse(orderRequest.getDate()))
+                .dateTime(LocalDateTime.parse(orderRequest.getDate()))
                 .customer(customer)
                 .name(orderRequest.getName())
                 .email(orderRequest.getEmail())

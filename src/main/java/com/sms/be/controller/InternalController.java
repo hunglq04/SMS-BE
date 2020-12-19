@@ -2,12 +2,14 @@ package com.sms.be.controller;
 
 import com.sms.be.dto.ManagerInfoDto;
 import com.sms.be.dto.RatingImageDto;
+import com.sms.be.dto.SalonStatisticDto;
 import com.sms.be.dto.request.ProductRequest;
 import com.sms.be.dto.request.BookingRequest;
 import com.sms.be.dto.request.SalonRequest;
 import com.sms.be.dto.request.ServiceRequest;
 import com.sms.be.dto.response.*;
 import com.sms.be.model.Product;
+import com.sms.be.service.InternalService;
 import com.sms.be.service.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -47,6 +49,9 @@ public class InternalController {
     @Autowired
     private ServiceTypeService serviceTypeService;
 
+    @Autowired
+    private InternalService internalService;
+
     @GetMapping("/employee/managers")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<ManagerInfoDto>> getAllManagers() {
@@ -66,6 +71,16 @@ public class InternalController {
     public ResponseEntity<Page<SalonInternalResponse>> getSalonPage(int pageOffset, int pageSize) {
         return ResponseEntity.ok(salonService.getSalonPage(pageOffset,
                 pageSize));
+    }
+
+    @GetMapping("/salon/statistic")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<SalonStatisticDto> getSalonStatistic(
+            @RequestParam(name = "salonId", required = false) Long salonId,
+            @RequestParam(name = "date", required = false) String date,
+            @RequestParam(value = "month", required = false) String monthYear,
+            @RequestParam(value = "year", required = false) Integer year) {
+        return ResponseEntity.ok().body(internalService.getSalonStatistic(salonId, date, monthYear, year));
     }
 
     @GetMapping("/product")
