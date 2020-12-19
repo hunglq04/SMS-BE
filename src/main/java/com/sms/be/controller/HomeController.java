@@ -1,12 +1,11 @@
 package com.sms.be.controller;
 
-import com.sms.be.constant.CommonConstants;
 import com.sms.be.dto.AccountDto;
+import com.sms.be.dto.MailDto;
 import com.sms.be.dto.request.RegisterRequest;
 import com.sms.be.dto.response.DistrictResponse;
 import com.sms.be.dto.response.LoginResponse;
 import com.sms.be.dto.response.ProvinceResponse;
-import com.sms.be.dto.response.SalonResponse;
 import com.sms.be.exception.ProvinceNotFoundException;
 import com.sms.be.model.Account;
 import com.sms.be.model.Customer;
@@ -16,10 +15,10 @@ import com.sms.be.repository.CustomerRepository;
 import com.sms.be.repository.EmployeeRepository;
 import com.sms.be.security.CustomUserDetails;
 import com.sms.be.security.JwtTokenProvider;
+import com.sms.be.service.ClientService;
 import com.sms.be.service.core.AccountService;
 import com.sms.be.service.core.DistrictService;
 import com.sms.be.service.core.ProvinceService;
-import com.sms.be.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,11 +30,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @RestController
@@ -65,6 +63,9 @@ public class HomeController {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private ClientService clientService;
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody AccountDto accountDto) {
         return authenticateAccount(accountDto);
@@ -88,6 +89,12 @@ public class HomeController {
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
         accountService.createNewAccount(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/send-mail")
+    public ResponseEntity<Void> sendMail(@Valid @RequestBody MailDto request) {
+        clientService.sendMail(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

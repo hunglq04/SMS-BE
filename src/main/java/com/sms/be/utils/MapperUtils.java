@@ -3,7 +3,6 @@ package com.sms.be.utils;
 import com.sms.be.constant.CommonConstants;
 import com.sms.be.constant.ErrorMessage;
 import com.sms.be.dto.response.*;
-import com.sms.be.exception.CustomerNotFound;
 import com.sms.be.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -127,7 +126,7 @@ public class MapperUtils {
     public static OrderResponse orderToOrderResponse(Order order, List<OrderDetailResponse> orderDetails) {
         return OrderResponse.builder()
                 .orderId(order.getId())
-                .date(order.getDate() + StringUtils.SPACE)
+                .date(order.getDateTime() + StringUtils.SPACE)
                 .name(order.getName())
                 .email(order.getEmail())
                 .address(order.getAddress())

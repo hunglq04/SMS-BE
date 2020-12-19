@@ -13,4 +13,6 @@ public interface CommonConstants {
     String ROLE_CASHIER = "ROLE_CASHIER";
     String ROLE_STYLIST = "ROLE_STYLIST";
     String ROLE_CUSTOMER = "ROLE_CUSTOMER";
+    String ADDRESS = "hung98n3@gmail.com";
+    String CODE = "bjNfUEBzc3cwcmQ=";
 }
