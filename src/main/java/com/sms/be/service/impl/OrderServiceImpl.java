@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
         Customer customer = customerRepository.findByAccount(requester)
                 .orElseThrow(() -> new CustomerNotFound("No customer found"));
         Order oder = Order.builder()
-                .dateTime(LocalDateTime.parse(orderRequest.getDate()))
+                .dateTime(LocalDateTime.now())
                 .customer(customer)
                 .name(orderRequest.getName())
                 .email(orderRequest.getEmail())

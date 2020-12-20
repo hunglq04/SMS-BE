@@ -82,7 +82,7 @@ public class InternalController {
     public ResponseEntity<SalonStatisticDto> getSalonStatistic(
             @RequestParam(name = "salonId", required = false) Long salonId,
             @RequestParam(name = "date", required = false) String date,
-            @RequestParam(value = "month", required = false) String monthYear,
+            @RequestParam(value = "monthYear", required = false) String monthYear,
             @RequestParam(value = "year", required = false) Integer year) {
         return ResponseEntity.ok().body(internalService.getSalonStatistic(salonId, date, monthYear, year));
     }
