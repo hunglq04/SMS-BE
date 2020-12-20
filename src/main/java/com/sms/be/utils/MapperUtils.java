@@ -4,6 +4,7 @@ import com.sms.be.constant.CommonConstants;
 import com.sms.be.constant.ErrorMessage;
 import com.sms.be.dto.response.*;
 import com.sms.be.model.*;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
@@ -104,6 +105,7 @@ public class MapperUtils {
     public static BookingResponse bookingToBookingResponse(Booking booking) {
         CustomerResponse customer = null;
         String walkInGuest = null;
+        Rating images = ObjectUtils.defaultIfNull(booking.getImages(), new Rating());
         if (Objects.nonNull(booking.getCustomer())) {
             customer = customerToCustomerResponse(booking.getCustomer());
         } else {
@@ -120,6 +122,10 @@ public class MapperUtils {
                 .stylist(booking.getStylist().getName())
                 .customer(customer)
                 .walkInGuest(walkInGuest)
+                .image1(images.getImage1())
+                .image2(images.getImage2())
+                .image3(images.getImage3())
+                .image4(images.getImage4())
                 .build();
     }
 

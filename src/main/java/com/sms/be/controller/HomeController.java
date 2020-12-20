@@ -134,6 +134,6 @@ public class HomeController {
             }
         }
 
-        return ResponseEntity.ok(new LoginResponse(jwt, roles, name, avatar, email, phone, address));
+        return ResponseEntity.ok(new LoginResponse(jwt, roles, name, avatar, phone , email, address));
     }
 }

@@ -2,6 +2,7 @@ package com.sms.be.service.impl;
 
 import com.sms.be.constant.BookingStatus;
 import com.sms.be.constant.CommonConstants;
+import com.sms.be.dto.MailDto;
 import com.sms.be.dto.RatingImageDto;
 import com.sms.be.dto.request.BookingRequest;
 import com.sms.be.dto.response.BookingResponse;
@@ -11,6 +12,7 @@ import com.sms.be.exception.EmployeeNotFound;
 import com.sms.be.exception.SalonNotFoundException;
 import com.sms.be.model.*;
 import com.sms.be.repository.*;
+import com.sms.be.service.ClientService;
 import com.sms.be.service.core.BookingService;
 import com.sms.be.utils.MapperUtils;
 import com.sms.be.utils.SecurityUtils;

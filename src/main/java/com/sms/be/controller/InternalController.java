@@ -211,4 +211,15 @@ public class InternalController {
     public ResponseEntity<OrderResponse> getOrderDetailPage(Long orderId) {
         return ResponseEntity.ok(orderService.getOrderDetail(orderId));
     }
+
+    @PostMapping("/order/{orderId}/confirm")
+    public ResponseEntity<OrderResponse> confirmOrder(@Valid @PathVariable(name = "orderId") Long orderId) {
+        return ResponseEntity.ok().body(orderService.confirmOrder(orderId));
+    }
+
+    @PostMapping("/order/{orderId}/confirmcompleted")
+    public ResponseEntity<OrderResponse> confirmCompletedOrder(@Valid @PathVariable(name = "orderId") Long orderId) {
+        return ResponseEntity.ok().body(orderService.confirmCompletedOrder(orderId));
+    }
+
 }
