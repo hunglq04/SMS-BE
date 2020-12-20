@@ -55,7 +55,6 @@ public class OrderRepositoryImpl extends AbstractCustomQuery implements OrderRep
         return new JPAQuery<>(entityManager).from(order)
                 .where(buildDateCondition(date, monthYear, year, order.dateTime))
                 .select(order.total).fetch().stream()
-
                 .reduce(Long::sum).orElse(0L);
     }
 

@@ -11,4 +11,6 @@ public interface OrderService {
     void orderProducts(OrderRequest orderRequest);
     OrderResponse getOrderDetail(Long orderId);
     Page<OrderResponse> getOrderPageByDate(int pageSize, int pageOffset, String fromDate);
+    OrderResponse confirmOrder(Long orderId);
+    OrderResponse confirmCompletedOrder(Long orderId);
 }

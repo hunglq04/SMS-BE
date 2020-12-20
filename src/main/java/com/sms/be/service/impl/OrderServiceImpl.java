@@ -1,6 +1,8 @@
 package com.sms.be.service.impl;
 
 import com.sms.be.constant.OrderStatus;
+import com.sms.be.controller.HomeController;
+import com.sms.be.dto.MailDto;
 import com.sms.be.dto.request.CartItem;
 import com.sms.be.dto.request.OrderRequest;
 import com.sms.be.dto.response.OrderDetailResponse;
@@ -18,13 +20,9 @@ import com.sms.be.utils.MapperUtils;
 import com.sms.be.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,6 +39,8 @@ public class OrderServiceImpl implements OrderService {
     OrderRepository orderRepository;
     @Autowired
     OrderDetailRepository orderDetailRepository;
+    @Autowired
+    HomeController homeController;
 
     @Override
     public List<OrderResponse> getOrderHistorytByCustomer() {
@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
         Customer customer = customerRepository.findByAccount(requester)
                 .orElseThrow(() -> new CustomerNotFound("No customer found"));
         Order oder = Order.builder()
-                .dateTime(LocalDateTime.parse(orderRequest.getDate()))
+                .dateTime(LocalDateTime.now())
                 .customer(customer)
                 .name(orderRequest.getName())
                 .email(orderRequest.getEmail())
@@ -86,6 +86,26 @@ public class OrderServiceImpl implements OrderService {
     public Page<OrderResponse> getOrderPageByDate(int pageSize, int pageOffset, String fromDate) {
       return orderRepository.getOrderPageByDate(pageSize, pageOffset, fromDate).map(
               (Order order) -> MapperUtils.orderToOrderResponse(order, Collections.emptyList()));
+    }
+
+    @Override
+    public OrderResponse confirmOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFound("No order found"));
+        order.setStatus(OrderStatus.CONFIRMED);
+        MailDto mailDto = MailDto.builder().build();
+        mailDto.setTemplateCode("email.test");
+        mailDto.setToMail(order.getEmail());
+        homeController.sendMail(mailDto);
+        return MapperUtils.orderToOrderResponse(order, Collections.emptyList());
+    }
+
+    @Override
+    public OrderResponse confirmCompletedOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFound("No order found"));
+        order.setStatus(OrderStatus.COMPLETED);
+        return MapperUtils.orderToOrderResponse(order, Collections.emptyList());
     }
 
     private void saveCartItem(CartItem item, Order order) {
