@@ -1,23 +1,20 @@
 package com.sms.be.repository.impl;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
-import com.sms.be.model.Booking;
+import com.sms.be.constant.OrderStatus;
 import com.sms.be.model.Customer;
-import com.sms.be.model.Employee;
 import com.sms.be.model.Order;
 import com.sms.be.model.QOrder;
-import com.sms.be.model.Role;
 import com.sms.be.repository.base.AbstractCustomQuery;
 import com.sms.be.repository.custom.OrderRepositoryCustom;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 
-import java.time.LocalDateTime;
-import org.apache.commons.lang3.StringUtils;
-
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.List;
 import java.util.Map;
@@ -53,14 +50,15 @@ public class OrderRepositoryImpl extends AbstractCustomQuery implements OrderRep
     @Override
     public Long getRevenueFromProducts(String date, String monthYear, Integer year) {
         return new JPAQuery<>(entityManager).from(order)
+                .where(order.status.eq(OrderStatus.COMPLETED))
                 .where(buildDateCondition(date, monthYear, year, order.dateTime))
                 .select(order.total).fetch().stream()
                 .reduce(Long::sum).orElse(0L);
     }
 
     @Override
-    public Long countOrders(String date, String monthYear, Integer year) {
-        return new JPAQuery<>(entityManager).from(order)
+    public Long countOrders(String date, String monthYear, Integer year, OrderStatus orderStatus) {
+        return new JPAQuery<>(entityManager).from(order).where(order.status.eq(orderStatus))
                 .where(buildDateCondition(date, monthYear, year, order.dateTime))
                 .fetchCount();
     }
@@ -71,6 +69,7 @@ public class OrderRepositoryImpl extends AbstractCustomQuery implements OrderRep
         NumberExpression<Integer> dateGroup = year != null ? order.dateTime.yearMonth() : order.dateTime.dayOfMonth();
         Map<Integer, Long> result = new JPAQuery<>(entityManager).from(order)
                 .where(buildDateConditionForChart(date, monthYear, year, order.dateTime))
+                .where(order.status.eq(OrderStatus.COMPLETED))
                 .groupBy(dateGroup).select(dateGroup, order.total.count())
                 .transform(groupBy(dateGroup).as(order.total.sum()));
         return StringUtils.isBlank(date) ? result :
@@ -82,6 +81,7 @@ public class OrderRepositoryImpl extends AbstractCustomQuery implements OrderRep
     @Override
     public Map<String, Integer> groupTopProductByDate(Long salonId, String date, String monthYear, Integer year) {
         return new JPAQuery<>(entityManager).from(orderDetail)
+                .where(orderDetail.order.status.eq(OrderStatus.COMPLETED))
                 .where(buildDateConditionForChart(date, monthYear, year, orderDetail.order.dateTime))
                 .groupBy(orderDetail.product.name)
                 .select(orderDetail.product.name, orderDetail.quantity.sum())

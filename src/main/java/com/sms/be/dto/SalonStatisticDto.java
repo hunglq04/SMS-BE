@@ -14,7 +14,9 @@ import java.util.Map;
 public class SalonStatisticDto {
     private Long revenue;
     private Long totalCustomer;
-    private Long totalOrder;
+    private Long completedOrders;
+    private Long progressOrders;
+    private Long newOrders;
     private Map<String, Long> customerChart;
     private Map<String, Long> topServices;
     private Map<String, Long> orderChart;
