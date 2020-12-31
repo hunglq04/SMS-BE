@@ -53,7 +53,7 @@ public class ScheduledJob {
     private SettingRepository settingRepository;
 
     // run each 10m
-    @Scheduled(fixedDelay = 1000 * 60 * TIME_TO_NOTIFY)
+    @Scheduled(initialDelay = 1000 ,fixedDelay = 1000 * 60 * TIME_TO_NOTIFY)
     public void notifyBooking() {
         LOGGER.info(" --------------- Notify to customer start --------------- ");
         List<Booking> bookingsToNotify = bookingRepository
@@ -72,7 +72,7 @@ public class ScheduledJob {
     }
 
     // run each 5m
-    @Scheduled(fixedDelay = 1000 * 60 * TIME_TO_CANCEL)
+    @Scheduled(initialDelay = 1000, fixedDelay = 1000 * 60 * TIME_TO_CANCEL)
     public void cancelBooking() {
         LOGGER.info(" --------------- Cancel booking start --------------- ");
         List<Booking> bookingsToCancel = bookingRepository.findByStatusAndDate(BookingStatus.WAITING, LocalDate.now());

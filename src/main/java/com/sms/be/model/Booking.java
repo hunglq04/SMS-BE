@@ -52,7 +52,7 @@ public class Booking extends BaseEntity {
     @Column
     private String walkInGuest;
 
-    @Column(nullable = false)
+    @Column
     private boolean notified = false;
 
     public Long getTotalPrice() {
