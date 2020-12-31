@@ -1,14 +1,17 @@
 package com.sms.be.repository;
 
+import com.sms.be.constant.BookingStatus;
 import com.sms.be.dto.response.StylishInfo;
 import com.sms.be.model.Booking;
 import com.sms.be.model.Employee;
 import com.sms.be.repository.base.BaseRepository;
 import com.sms.be.repository.custom.BookingRepositoryCustom;
+import org.apache.tomcat.jni.Local;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -25,4 +28,8 @@ public interface BookingRepository extends BaseRepository<Booking, Long>, Bookin
     void deleteAllByIdIn(List<Long> bookingIds);
 
     List<Booking> findByStylistAndDateAfterAndDateBefore(Employee stylist, LocalDate after, LocalDate before);
+
+    List<Booking> findByNotifiedIsFalseAndDateAndTimeBetween(LocalDate date, LocalTime from, LocalTime to);
+
+    List<Booking> findByStatusAndDate(BookingStatus status, LocalDate date);
 }
