@@ -54,6 +54,7 @@ public class MapperUtils {
                 .id(service.getId())
                 .name(service.getName())
                 .description(service.getDescription())
+                .descriptionImage(service.getDescriptionImage())
                 .bookingImage(service.getBookingImage())
                 .bookingRecommendImage(service.getBookingRecommendImage())
                 .isRecommend(service.isRecommend())
