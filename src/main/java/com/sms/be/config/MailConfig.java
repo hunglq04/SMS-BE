@@ -20,7 +20,7 @@ public class MailConfig {
         mailSender.setPort(587);
 
         mailSender.setUsername(CommonConstants.ADDRESS);
-        mailSender.setPassword(new String(Base64.getDecoder().decode(CommonConstants.CODE)));
+        mailSender.setPassword(CommonConstants.CODE);
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");

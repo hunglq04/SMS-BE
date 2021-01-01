@@ -1,6 +1,7 @@
 package com.sms.be.service.batchjob;
 
 import com.sms.be.constant.BookingStatus;
+import com.sms.be.constant.CommonConstants;
 import com.sms.be.dto.MailDto;
 import com.sms.be.model.Booking;
 import com.sms.be.model.Setting;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,12 +36,6 @@ public class ScheduledJob {
     private final long TIME_TO_NOTIFY = 5;
 
     private final long TIME_TO_CANCEL = 3;
-
-    private final String ACCOUNT_SID = "AC4c1beab06610d0943ac42f8b7fb52052";
-
-    private final String AUTH_TOKEN = "c9704caf79eaf308da0867a9dde47420";
-
-    private final String FROM_PHONE_NUMBER = "+15615315690";
 
     @Autowired
     private BookingRepository bookingRepository;
@@ -91,7 +85,6 @@ public class ScheduledJob {
         clientService.sendMail(mailDto);
     }
 
-    @GetMapping("send-sms")
     public void sendSMS(Booking booking) {
         String salonAddress = String
                 .join(", ", booking.getSalon().getStreet(), booking.getSalon().getDistrict().getName(),
@@ -104,9 +97,9 @@ public class ScheduledJob {
                         + ", vui lòng đến trước thời gian đặt 15 phút");
         //TODO remove hardcode after upgrade send SMS service
         String toNumber = "+84" + booking.getCustomer().getPhoneNumber();
-        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+        Twilio.init(CommonConstants.ACCOUNT_SID, CommonConstants.AUTH_TOKEN);
         Message.creator(new PhoneNumber(toNumber), // to
-                new PhoneNumber(FROM_PHONE_NUMBER), // from
+                new PhoneNumber(CommonConstants.FROM_PHONE_NUMBER), // from
                 smsBody).create();
     }
 }

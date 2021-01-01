@@ -1,5 +1,6 @@
 package com.sms.be.controller;
 
+import com.sms.be.constant.CommonConstants;
 import com.sms.be.dto.AccountDto;
 import com.sms.be.dto.MailDto;
 import com.sms.be.dto.request.RegisterRequest;
@@ -8,8 +9,10 @@ import com.sms.be.dto.response.LoginResponse;
 import com.sms.be.dto.response.ProvinceResponse;
 import com.sms.be.exception.ProvinceNotFoundException;
 import com.sms.be.model.Account;
+import com.sms.be.model.Booking;
 import com.sms.be.model.Customer;
 import com.sms.be.model.Employee;
+import com.sms.be.model.Setting;
 import com.sms.be.repository.AccountRepository;
 import com.sms.be.repository.CustomerRepository;
 import com.sms.be.repository.EmployeeRepository;
@@ -19,6 +22,9 @@ import com.sms.be.service.ClientService;
 import com.sms.be.service.core.AccountService;
 import com.sms.be.service.core.DistrictService;
 import com.sms.be.service.core.ProvinceService;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -96,6 +102,15 @@ public class HomeController {
     public ResponseEntity<Void> sendMail(@Valid @RequestBody MailDto request) {
         clientService.sendMail(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/send-sms")
+    public ResponseEntity<Void> sendSMS(String toNumber, String content) {
+            Twilio.init(CommonConstants.ACCOUNT_SID,CommonConstants. AUTH_TOKEN);
+            Message.creator(new PhoneNumber(toNumber), // to
+                    new PhoneNumber(CommonConstants.FROM_PHONE_NUMBER), // from
+                    content).create();
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     private ResponseEntity<LoginResponse> authenticateAccount(@RequestBody @Valid AccountDto accountDto) {
