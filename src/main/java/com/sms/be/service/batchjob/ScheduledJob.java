@@ -33,9 +33,9 @@ public class ScheduledJob {
     //TODO add these variable to setting table
     private final long MAX_WAIT_TIME = 15L;
 
-    private final long TIME_TO_NOTIFY = 15L;
+    private final long TIME_TO_NOTIFY = 5;
 
-    private final long TIME_TO_CANCEL = 5L;
+    private final long TIME_TO_CANCEL = 3;
 
     private final String ACCOUNT_SID = "AC4c1beab06610d0943ac42f8b7fb52052";
 
@@ -52,7 +52,6 @@ public class ScheduledJob {
     @Autowired
     private SettingRepository settingRepository;
 
-    // run each 10m
     @Scheduled(initialDelay = 1000 ,fixedDelay = 1000 * 60 * TIME_TO_NOTIFY)
     public void notifyBooking() {
         LOGGER.info(" --------------- Notify to customer start --------------- ");
@@ -71,17 +70,18 @@ public class ScheduledJob {
         LOGGER.info(" --------------- Notify to customer end --------------- ");
     }
 
-    // run each 5m
     @Scheduled(initialDelay = 1000, fixedDelay = 1000 * 60 * TIME_TO_CANCEL)
     public void cancelBooking() {
         LOGGER.info(" --------------- Cancel booking start --------------- ");
-        List<Booking> bookingsToCancel = bookingRepository.findByStatusAndDateLessThanEqual(BookingStatus.WAITING, LocalDate.now());
+
+        List<Booking> bookingsToCancel = bookingRepository
+                .findByStatusAndDateLessThanEqual(BookingStatus.WAITING, LocalDate.now());
         bookingsToCancel.stream()
-                .filter(booking -> ChronoUnit.MINUTES.between(booking.getTime(), LocalTime.now()) >= MAX_WAIT_TIME)
-                .forEach(booking -> {
-                    booking.setStatus(BookingStatus.CANCEL);
-                    sendMailInform(booking, "email.cancel");
-                });
+                .filter(booking -> ChronoUnit.MINUTES.between(booking.getTime(), LocalTime.now()) >= MAX_WAIT_TIME
+                        || booking.getDate().isBefore(LocalDate.now())).forEach(booking -> {
+            booking.setStatus(BookingStatus.CANCEL);
+            sendMailInform(booking, "email.cancel");
+        });
 
         LOGGER.info(" --------------- Cancel booking end --------------- ");
     }
