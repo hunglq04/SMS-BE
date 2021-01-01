@@ -29,7 +29,8 @@ public interface BookingRepository extends BaseRepository<Booking, Long>, Bookin
 
     List<Booking> findByStylistAndDateAfterAndDateBefore(Employee stylist, LocalDate after, LocalDate before);
 
-    List<Booking> findByNotifiedIsFalseAndDateAndTimeBetween(LocalDate date, LocalTime from, LocalTime to);
+    List<Booking> findByNotifiedIsFalseAndDateAndTimeBetweenAndStatus(LocalDate date, LocalTime from, LocalTime to,
+            BookingStatus bookingStatus);
 
     List<Booking> findByStatusAndDateLessThanEqual(BookingStatus status, LocalDate date);
 }

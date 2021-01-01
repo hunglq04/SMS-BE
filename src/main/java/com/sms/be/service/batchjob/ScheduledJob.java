@@ -56,8 +56,8 @@ public class ScheduledJob {
     public void notifyBooking() {
         LOGGER.info(" --------------- Notify to customer start --------------- ");
         List<Booking> bookingsToNotify = bookingRepository
-                .findByNotifiedIsFalseAndDateAndTimeBetween(LocalDate.now(), LocalTime.now().minusMinutes(60),
-                        LocalTime.now());
+                .findByNotifiedIsFalseAndDateAndTimeBetweenAndStatus(LocalDate.now(),
+                        LocalTime.now().minusMinutes(60), LocalTime.now(), BookingStatus.WAITING);
         bookingsToNotify.forEach(booking -> {
             booking.setNotified(true);
             sendSMS(booking);
