@@ -75,7 +75,7 @@ public class ScheduledJob {
     @Scheduled(initialDelay = 1000, fixedDelay = 1000 * 60 * TIME_TO_CANCEL)
     public void cancelBooking() {
         LOGGER.info(" --------------- Cancel booking start --------------- ");
-        List<Booking> bookingsToCancel = bookingRepository.findByStatusAndDate(BookingStatus.WAITING, LocalDate.now());
+        List<Booking> bookingsToCancel = bookingRepository.findByStatusAndDateLessThanEqual(BookingStatus.WAITING, LocalDate.now());
         bookingsToCancel.stream()
                 .filter(booking -> ChronoUnit.MINUTES.between(booking.getTime(), LocalTime.now()) >= MAX_WAIT_TIME)
                 .forEach(booking -> {
