@@ -4,7 +4,7 @@ WHERE ID = 10;
 
 UPDATE EMPLOYEE SET
     AVATAR = 'https://firebasestorage.googleapis.com/v0/b/sms-fe.appspot.com/o/avatar%2Fbeck.jpg?alt=media&token=46dbb6e3-4a84-4970-a4d4-386e611cde4e'
-WHERE ID = 11;d
+WHERE ID = 11;
 
 UPDATE EMPLOYEE SET
     AVATAR = 'https://firebasestorage.googleapis.com/v0/b/sms-fe.appspot.com/o/avatar%2Fduy.jpg?alt=media&token=29381ee3-318a-4969-853b-65ae4e48df3b'
