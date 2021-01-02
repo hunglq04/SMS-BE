@@ -16,6 +16,7 @@ import com.sms.be.model.Setting;
 import com.sms.be.repository.AccountRepository;
 import com.sms.be.repository.CustomerRepository;
 import com.sms.be.repository.EmployeeRepository;
+import com.sms.be.repository.SettingRepository;
 import com.sms.be.security.CustomUserDetails;
 import com.sms.be.security.JwtTokenProvider;
 import com.sms.be.service.ClientService;
@@ -38,6 +39,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -111,6 +114,30 @@ public class HomeController {
                     new PhoneNumber(CommonConstants.FROM_PHONE_NUMBER), // from
                     content).create();
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/check-local-datetime")
+    public ResponseEntity<String> checkLocalDateTime() {
+        return ResponseEntity.ok(LocalDateTime.now().toString());
+    }
+
+    @Autowired
+    private SettingRepository settingRepository;
+
+    @GetMapping("/setting/{key}")
+    public String getSetting(@PathVariable(value = "key") String key) {
+        Setting setting = settingRepository.findFirstByKey(key)
+                .orElseThrow(() -> new IllegalArgumentException("Key không hợp lệ"));
+        return setting.getValue1();
+    }
+
+    @PostMapping("/setting/{key}")
+    public String updateSetting(@PathVariable(value = "key") String key, String value) {
+        Setting setting = settingRepository.findFirstByKey(key)
+                .orElseThrow(() -> new IllegalArgumentException("Key không hợp lệ"));
+        setting.setValue1(value);
+        settingRepository.save(setting);
+        return setting.getValue1() + " - cập nhật thành công";
     }
 
     private ResponseEntity<LoginResponse> authenticateAccount(@RequestBody @Valid AccountDto accountDto) {

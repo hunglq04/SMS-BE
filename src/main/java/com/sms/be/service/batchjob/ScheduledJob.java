@@ -11,6 +11,7 @@ import com.sms.be.service.ClientService;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +32,9 @@ public class ScheduledJob {
     private final Logger LOGGER = LoggerFactory.getLogger(ScheduledJob.class);
 
     //TODO add these variable to setting table
-    private final long MAX_WAIT_TIME = 15L;
+    private final long TIME_TO_NOTIFY = 1;
 
-    private final long TIME_TO_NOTIFY = 5;
-
-    private final long TIME_TO_CANCEL = 3;
+    private final long TIME_TO_CANCEL = 1;
 
     @Autowired
     private BookingRepository bookingRepository;
@@ -51,7 +50,7 @@ public class ScheduledJob {
         LOGGER.info(" --------------- Notify to customer start --------------- ");
         List<Booking> bookingsToNotify = bookingRepository
                 .findByNotifiedIsFalseAndDateAndTimeBetweenAndStatus(LocalDate.now(),
-                        LocalTime.now().minusMinutes(60), LocalTime.now(), BookingStatus.WAITING);
+                        LocalTime.now(), LocalTime.now().plusHours(2), BookingStatus.WAITING);
         bookingsToNotify.forEach(booking -> {
             booking.setNotified(true);
             sendSMS(booking);
@@ -67,7 +66,8 @@ public class ScheduledJob {
     @Scheduled(initialDelay = 1000, fixedDelay = 1000 * 60 * TIME_TO_CANCEL)
     public void cancelBooking() {
         LOGGER.info(" --------------- Cancel booking start --------------- ");
-
+        final long MAX_WAIT_TIME = NumberUtils
+                .toLong(settingRepository.findFirstByKey("time.max.wait").map(Setting::getValue1).orElse("1"), 1L);
         List<Booking> bookingsToCancel = bookingRepository
                 .findByStatusAndDateLessThanEqual(BookingStatus.WAITING, LocalDate.now());
         bookingsToCancel.stream()
