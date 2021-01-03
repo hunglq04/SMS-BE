@@ -110,6 +110,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFound("No order found"));
         order.setStatus(OrderStatus.COMPLETED);
+        orderRepository.save(order);
         return MapperUtils.orderToOrderResponse(order, Collections.emptyList());
     }
 
