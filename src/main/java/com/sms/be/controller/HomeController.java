@@ -9,7 +9,6 @@ import com.sms.be.dto.response.LoginResponse;
 import com.sms.be.dto.response.ProvinceResponse;
 import com.sms.be.exception.ProvinceNotFoundException;
 import com.sms.be.model.Account;
-import com.sms.be.model.Booking;
 import com.sms.be.model.Customer;
 import com.sms.be.model.Employee;
 import com.sms.be.model.Setting;
@@ -35,12 +34,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.mail.MessagingException;
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -109,7 +112,8 @@ public class HomeController {
 
     @PostMapping("/send-sms")
     public ResponseEntity<Void> sendSMS(String toNumber, String content) {
-            Twilio.init(CommonConstants.ACCOUNT_SID,CommonConstants. AUTH_TOKEN);
+            Twilio.init(CommonConstants.ACCOUNT_SID, new String(Base64.getDecoder().decode(CommonConstants.AUTH_TOKEN))
+                    .replace(CommonConstants.CODE, CommonConstants.EMPTY));
             Message.creator(new PhoneNumber(toNumber), // to
                     new PhoneNumber(CommonConstants.FROM_PHONE_NUMBER), // from
                     content).create();

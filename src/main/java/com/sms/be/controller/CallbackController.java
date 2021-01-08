@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -31,6 +32,9 @@ public class CallbackController {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Value("${fcm.token}")
+    private String fcmToken;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
     private String key2 = "uUfsWgfLkRLzq6W2uNXTCxrfxs51auny";
@@ -104,13 +108,11 @@ public class CallbackController {
     private ResponseEntity<Void> pushNotificationTemplate(JSONObject personJsonObject) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization","key=AAAAy2Ca4-Q:APA91bG2luY9yTUpQ2MieM1YqaBZF-OcNDWslqVT"
+        headers.add("Authorization", "key=AAAAy2Ca4-Q:APA91bG2luY9yTUpQ2MieM1YqaBZF-OcNDWslqVT"
                 + "bhsZN02bBbFIpiCys7tjOVio7V-aiySjIuhyJYb1mXXAQMV0IMQbPFDajzU-0elEWVvt2iSxQhJOfqn32MsXIqWGc4FlUWy86Gvc");
 
-        personJsonObject.put("to", "eKOHvOx0kVQx8q9xMGd6Hz:APA91bHAmHf3KsoHEmZtxziVHk_19l2ZmYdj-v8niUYWoVbUpU0ky5NfDFlb"
-                + "1v1Z7GGSfRA_vGD2neUqX9TE73BIRC6aLEcd2UiC-jZmy-JpKvK3p0MGdGjGM9-iBLogi7YS4Ee02cIq");
-        HttpEntity<String> request =
-                new HttpEntity<>(personJsonObject.toString(), headers);
+        personJsonObject.put("to", fcmToken);
+        HttpEntity<String> request = new HttpEntity<>(personJsonObject.toString(), headers);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> stringResponseEntity = restTemplate
                 .postForEntity("https://fcm.googleapis.com/fcm/send", request, String.class);

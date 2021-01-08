@@ -16,6 +16,6 @@ public interface CommonConstants {
     String ADDRESS = "hung98n3@gmail.com";
     String CODE = "polqqagdrbduyvpt";
     String ACCOUNT_SID = "AC4c1beab06610d0943ac42f8b7fb52052";
-    String AUTH_TOKEN = "c9704caf79eaf308da0867a9dde47420";
+    String AUTH_TOKEN = "MjQ2Yjg3NzFjNWE1OXBvbHFxYWdkcmJkdXl2cHRkZGJhNGJhMWRkM2YzYTJkMzlm";
     String FROM_PHONE_NUMBER = "+15615315690";
 }

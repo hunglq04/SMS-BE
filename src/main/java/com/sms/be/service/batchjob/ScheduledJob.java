@@ -8,6 +8,7 @@ import com.sms.be.model.Setting;
 import com.sms.be.repository.BookingRepository;
 import com.sms.be.repository.SettingRepository;
 import com.sms.be.service.ClientService;
+import java.util.Base64;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -74,7 +76,9 @@ public class ScheduledJob {
                 .filter(booking -> ChronoUnit.MINUTES.between(booking.getTime(), LocalTime.now()) >= MAX_WAIT_TIME
                         || booking.getDate().isBefore(LocalDate.now())).forEach(booking -> {
             booking.setStatus(BookingStatus.CANCEL);
-            sendMailInform(booking, "email.cancel");
+            if (Objects.nonNull(booking.getCustomer())) {
+                sendMailInform(booking, "email.cancel");
+            }
         });
 
         LOGGER.info(" --------------- Cancel booking end --------------- ");
@@ -97,7 +101,8 @@ public class ScheduledJob {
                         + ", vui lòng đến trước thời gian đặt 15 phút");
         //TODO remove hardcode after upgrade send SMS service
         String toNumber = "+84" + booking.getCustomer().getPhoneNumber();
-        Twilio.init(CommonConstants.ACCOUNT_SID, CommonConstants.AUTH_TOKEN);
+        Twilio.init(CommonConstants.ACCOUNT_SID, new String(Base64.getDecoder().decode(CommonConstants.AUTH_TOKEN))
+                .replace(CommonConstants.CODE, CommonConstants.EMPTY));
         Message.creator(new PhoneNumber(toNumber), // to
                 new PhoneNumber(CommonConstants.FROM_PHONE_NUMBER), // from
                 smsBody).create();
