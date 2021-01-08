@@ -41,8 +41,6 @@ public class CallbackController {
             String dataStr = cbdata.getString("data");
             String reqMac = cbdata.getString("mac");
 
-            cbdata.keySet().forEach(key -> logger.info("{} == {}", key, cbdata.get(key)));
-
             byte[] hashBytes = HmacSHA256.doFinal(dataStr.getBytes());
             String mac = DatatypeConverter.printHexBinary(hashBytes).toLowerCase();
 
