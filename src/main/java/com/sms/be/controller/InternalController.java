@@ -19,6 +19,7 @@ import com.sms.be.dto.response.ServiceBookingResponse;
 import com.sms.be.dto.response.ServiceTypeResponse;
 import com.sms.be.dto.response.StylistSchedulerResponse;
 import com.sms.be.dto.response.*;
+import com.sms.be.model.Booking;
 import com.sms.be.model.Product;
 import com.sms.be.model.Salon;
 import com.sms.be.model.Service;
@@ -232,6 +233,19 @@ public class InternalController {
             RatingImageDto images) {
         bookingService.finishProgress(bookingId, images);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/booking/{id}/cancel")
+    public ResponseEntity<Void> cancelBooking(@Valid @PathVariable(name = "id") Long bookingId) {
+        Booking booking = bookingService.cancelBooking(bookingId);
+        if (booking.getCustomer() != null) {
+            String phone = "+84" + booking.getCustomer().getPhoneNumber();
+            String content = "Lịch đặt của bạn tại salon: " + String
+                    .join(", ", booking.getSalon().getStreet(), booking.getSalon().getDistrict().getName(),
+                            booking.getSalon().getProvince().getName()) + " đã bị hủy vì stylist không thể thực hiện lịch này "
+                    + "vui lòng đặt lịch mới tại https://v-barbershop.wep.app";
+            internalService.sendSMS(phone, content);
+        } return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("employee/stylist/scheduler")

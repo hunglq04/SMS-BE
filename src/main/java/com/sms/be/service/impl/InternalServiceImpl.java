@@ -1,14 +1,21 @@
 package com.sms.be.service.impl;
 
+import com.sms.be.constant.CommonConstants;
 import com.sms.be.constant.OrderStatus;
 import com.sms.be.dto.SalonStatisticDto;
 import com.sms.be.repository.BillRepository;
 import com.sms.be.repository.OrderRepository;
 import com.sms.be.service.InternalService;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,5 +53,14 @@ public class InternalServiceImpl implements InternalService {
                 .topProducts(orderRepository.groupTopProductByDate(salonId, date, monthYear, year))
                 .newOrders(orderRepository.countOrders(date, monthYear, year, OrderStatus.NEW))
                 .progressOrders(orderRepository.countOrders(date, monthYear, year, OrderStatus.CONFIRMED)).build();
+    }
+
+    @Override
+    public void sendSMS(String toNumber, String content) {
+        Twilio.init(CommonConstants.ACCOUNT_SID, new String(Base64.getDecoder().decode(CommonConstants.AUTH_TOKEN))
+                .replace(CommonConstants.CODE, CommonConstants.EMPTY));
+        Message.creator(new PhoneNumber(toNumber), // to
+                new PhoneNumber(CommonConstants.FROM_PHONE_NUMBER), // from
+                content).create();
     }
 }

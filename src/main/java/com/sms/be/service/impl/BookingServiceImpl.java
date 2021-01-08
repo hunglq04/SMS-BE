@@ -185,6 +185,13 @@ public class BookingServiceImpl implements BookingService {
         ratingRepository.save(rating);
     }
 
+    @Override
+    public Booking cancelBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(BookingNotFoundException::new);
+        booking.setStatus(BookingStatus.CANCEL);
+        return bookingRepository.save(booking);
+    }
+
     public static String getCurrentTimeString(String format) {
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT+7"));
         SimpleDateFormat fmt = new SimpleDateFormat(format);

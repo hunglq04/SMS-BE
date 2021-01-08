@@ -19,6 +19,7 @@ import com.sms.be.repository.SettingRepository;
 import com.sms.be.security.CustomUserDetails;
 import com.sms.be.security.JwtTokenProvider;
 import com.sms.be.service.ClientService;
+import com.sms.be.service.InternalService;
 import com.sms.be.service.core.AccountService;
 import com.sms.be.service.core.DistrictService;
 import com.sms.be.service.core.ProvinceService;
@@ -78,6 +79,9 @@ public class HomeController {
     @Autowired
     private ClientService clientService;
 
+    @Autowired
+    private InternalService internalService;
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody AccountDto accountDto) {
         return authenticateAccount(accountDto);
@@ -112,11 +116,7 @@ public class HomeController {
 
     @PostMapping("/send-sms")
     public ResponseEntity<Void> sendSMS(String toNumber, String content) {
-            Twilio.init(CommonConstants.ACCOUNT_SID, new String(Base64.getDecoder().decode(CommonConstants.AUTH_TOKEN))
-                    .replace(CommonConstants.CODE, CommonConstants.EMPTY));
-            Message.creator(new PhoneNumber(toNumber), // to
-                    new PhoneNumber(CommonConstants.FROM_PHONE_NUMBER), // from
-                    content).create();
+            internalService.sendSMS(toNumber, content);
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 

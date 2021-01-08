@@ -4,6 +4,7 @@ import com.sms.be.dto.RatingImageDto;
 import com.sms.be.dto.request.BookingRequest;
 import com.sms.be.dto.response.BillResponse;
 import com.sms.be.dto.response.BookingResponse;
+import com.sms.be.model.Booking;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -16,4 +17,5 @@ public interface BookingService {
     BillResponse invoice(Long bookingId, boolean withZP);
     BookingResponse startProgress(Long bookingId);
     void finishProgress(Long bookingId, RatingImageDto images);
+    Booking cancelBooking(Long bookingId);
 }
