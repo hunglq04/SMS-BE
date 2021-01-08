@@ -3,12 +3,17 @@ package com.sms.be.repository.impl;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
+import com.sms.be.exception.SalonNotFoundException;
+import com.sms.be.model.QSalon;
+import com.sms.be.model.Salon;
 import com.sms.be.repository.base.AbstractCustomQuery;
 import com.sms.be.repository.custom.BillRepositoryCustom;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 import java.time.Year;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -56,6 +61,23 @@ public class BillRepositoryImpl extends AbstractCustomQuery implements BillRepos
                 .select(service.name, service.count())
                 .orderBy(service.count().desc())
                 .transform(groupBy(service.name).as(service.count()));
+    }
+
+    @Override
+    public Map<Salon, Long> groupRevenueFromSalonsByDate(String date, String monthYear, Integer year) {
+        Map<Long, Long> salonIdRevMap = new JPAQuery<>(entityManager).from(bill)
+                .where(buildDateCondition(date, monthYear, year, bill.dateTime))
+                .groupBy(bill.booking.salon.id)
+                .select(bill.booking.salon.id, bill.total.sum())
+                .orderBy(bill.total.sum().desc())
+                .transform(groupBy(bill.booking.salon.id).as(bill.total.sum()));
+        List<Salon> salons = new JPAQuery<>(entityManager).from(QSalon.salon).select(QSalon.salon).fetch();
+        Map<Salon, Long> salonRevMap = salonIdRevMap.entrySet().stream().collect(Collectors
+                .toMap(entry -> salons.stream().filter(salon -> salon.getId().equals(entry.getKey())).findFirst()
+                        .orElseThrow(SalonNotFoundException::new), Map.Entry::getValue));
+        salons.stream().filter(salon -> groupRevenueFromServicesByDate(salon.getId(), date, monthYear, year).size() == 0)
+                .forEach(salon -> salonRevMap.put(salon, 0L));
+        return salonRevMap;
     }
 
     private BooleanBuilder buildStatisticCondition(Long salonId, String date, String monthYear, Integer year) {

@@ -21,4 +21,5 @@ public class SalonStatisticDto {
     private Map<String, Long> topServices;
     private Map<String, Long> orderChart;
     private Map<String, Integer> topProducts;
+    private Map<String, Long> salonChart;
 }
