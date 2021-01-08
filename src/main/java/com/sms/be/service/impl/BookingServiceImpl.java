@@ -2,9 +2,9 @@ package com.sms.be.service.impl;
 
 import com.sms.be.constant.BookingStatus;
 import com.sms.be.constant.CommonConstants;
-import com.sms.be.dto.MailDto;
 import com.sms.be.dto.RatingImageDto;
 import com.sms.be.dto.request.BookingRequest;
+import com.sms.be.dto.response.BillResponse;
 import com.sms.be.dto.response.BookingResponse;
 import com.sms.be.exception.BookingNotFoundException;
 import com.sms.be.exception.CustomerNotFound;
@@ -12,26 +12,46 @@ import com.sms.be.exception.EmployeeNotFound;
 import com.sms.be.exception.SalonNotFoundException;
 import com.sms.be.model.*;
 import com.sms.be.repository.*;
-import com.sms.be.service.ClientService;
 import com.sms.be.service.core.BookingService;
+import com.sms.be.utils.HMACUtil;
 import com.sms.be.utils.MapperUtils;
 import com.sms.be.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = Throwable.class)
 public class BookingServiceImpl implements BookingService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BookingServiceImpl.class);
 
     @Autowired
     private BookingRepository bookingRepository;
@@ -113,7 +133,8 @@ public class BookingServiceImpl implements BookingService {
     public void deleteBooking(Long id) {
         bookingRepository.deleteById(id);
     }
-    public Long invoice(Long bookingId) {
+
+    public BillResponse invoice(Long bookingId) {
         Account requester = SecurityUtils.getCurrentAccount();
         Employee cashier = employeeRepository.findByAccount(requester)
                 .orElseThrow(() -> new EmployeeNotFound("No Cashier found"));
@@ -130,7 +151,13 @@ public class BookingServiceImpl implements BookingService {
                 .total(booking.getTotalPrice())
                 .build());
         billRepository.saveAndFlush(bill);
-        return bill.getId();
+        String zaloPayToken = "";
+        try {
+            zaloPayToken = createZaloPayOrder(bill);
+        } catch (Exception e) {
+            LOGGER.error("Create ZaloPay fail", e);
+        }
+        return BillResponse.builder().billId(bill.getId()).zpToken(zaloPayToken).build();
     }
 
     @Override
@@ -155,4 +182,77 @@ public class BookingServiceImpl implements BookingService {
         rating.setCreatedBy(stylist);
         ratingRepository.save(rating);
     }
+
+    public static String getCurrentTimeString(String format) {
+        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT+7"));
+        SimpleDateFormat fmt = new SimpleDateFormat(format);
+        fmt.setCalendar(cal);
+        return fmt.format(cal.getTimeInMillis());
+    }
+
+    private String createZaloPayOrder(Bill bill) throws Exception {
+        final Map<String, String> config = new HashMap<String, String>(){{
+            put("appid", "554");
+            put("key1", "8NdU5pG5R2spGHGhyO99HN1OhD8IQJBn");
+            put("key2", "uUfsWgfLkRLzq6W2uNXTCxrfxs51auny");
+            put("endpoint", "https://sandbox.zalopay.com.vn/v001/tpe/createorder");
+        }};
+
+        final Map embeddata = new HashMap(){{
+            put("merchantinfo", "embeddata123");
+        }};
+
+        final Map[] item = bill.getBooking().getServices().stream().map(service -> {
+            Map serviceItem = new HashMap();
+            serviceItem.put("itemid", service.getId());
+            serviceItem.put("itemname", service.getName());
+            serviceItem.put("itemprice", service.getPrice());
+            serviceItem.put("itemquantity", 1);
+            return serviceItem;
+        }).toArray(Map[]::new);
+
+        Map<String, Object> order = new HashMap<String, Object>(){{
+            put("appid", config.get("appid"));
+            put("apptransid", getCurrentTimeString("yyMMdd") +"_V-BARBERSHOP-BILL-"+ bill.getId()); // mã giao dich có định dạng yyMMdd_xxxx
+            put("apptime", System.currentTimeMillis()); // miliseconds
+            put("appuser", "demo");
+            put("amount", bill.getTotal());
+            put("description", "V-barbershop ZaloPay Demo");
+            put("bankcode", "zalopayapp");
+            put("item", new JSONObject(item).toString());
+            put("embeddata", new JSONObject(embeddata).toString());
+        }};
+
+        // appid +”|”+ apptransid +”|”+ appuser +”|”+ amount +"|" + apptime +”|”+ embeddata +"|" +item
+        String data = order.get("appid") +"|"+ order.get("apptransid") +"|"+ order.get("appuser") +"|"+ order.get("amount")
+                +"|"+ order.get("apptime") +"|"+ order.get("embeddata") +"|"+ order.get("item");
+        order.put("mac", HMACUtil.HMacHexStringEncode(HMACUtil.HMACSHA256, config.get("key1"), data));
+
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost post = new HttpPost(config.get("endpoint"));
+
+        List<NameValuePair> params = new ArrayList<>();
+        for (Map.Entry<String, Object> e : order.entrySet()) {
+            params.add(new BasicNameValuePair(e.getKey(), e.getValue().toString()));
+        }
+
+        // Content-Type: application/x-www-form-urlencoded
+        post.setEntity(new UrlEncodedFormEntity(params));
+
+        CloseableHttpResponse res = client.execute(post);
+        BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()));
+        StringBuilder resultJsonStr = new StringBuilder();
+        String line;
+
+        while ((line = rd.readLine()) != null) {
+            resultJsonStr.append(line);
+        }
+
+        JSONObject result = new JSONObject(resultJsonStr.toString());
+        for (String key : result.keySet()) {
+            LOGGER.info("{} = {}\n", key, result.get(key));
+        }
+        return result.get("zptranstoken").toString();
+    }
+
 }

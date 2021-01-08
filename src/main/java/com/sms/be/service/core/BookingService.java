@@ -2,6 +2,7 @@ package com.sms.be.service.core;
 
 import com.sms.be.dto.RatingImageDto;
 import com.sms.be.dto.request.BookingRequest;
+import com.sms.be.dto.response.BillResponse;
 import com.sms.be.dto.response.BookingResponse;
 import org.springframework.data.domain.Page;
 
@@ -12,7 +13,7 @@ public interface BookingService {
     List<BookingResponse> getBookingHistoryByCustomer();
     Page<BookingResponse> getBookingPageByDateAndSalon(int pageSize, int pageOffset, String fromDate, Long salonId);
     void deleteBooking(Long id);
-    Long invoice(Long bookingId);
+    BillResponse invoice(Long bookingId);
     BookingResponse startProgress(Long bookingId);
     void finishProgress(Long bookingId, RatingImageDto images);
 }
