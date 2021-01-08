@@ -21,6 +21,7 @@ public class BookingRepositoryImpl extends AbstractCustomQuery implements Bookin
         return customer == null ? Collections.emptyList() :
                 new JPAQuery<>(entityManager).from(QBooking.booking)
                 .where(QBooking.booking.customer.eq(customer))
+                .orderBy(QBooking.booking.date.desc(), QBooking.booking.status.desc())
                 .select(QBooking.booking)
                 .fetch();
     }

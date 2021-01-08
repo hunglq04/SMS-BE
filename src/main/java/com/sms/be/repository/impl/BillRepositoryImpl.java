@@ -49,7 +49,10 @@ public class BillRepositoryImpl extends AbstractCustomQuery implements BillRepos
         return StringUtils.isBlank(date) ? result :
                 result.entrySet().stream().collect(Collectors
                         .toMap(e -> Year.of(LocalDate.parse(date).getYear()).atMonth(LocalDate.parse(date).getMonth())
-                                .atDay(e.getKey()).getDayOfWeek().getValue(), Map.Entry::getValue));
+                                .atDay(e.getKey()).getDayOfWeek().getValue(), Map.Entry::getValue, (x1, x2) -> {
+                            System.out.println("duplicate key found!");
+                            return x1;
+                        }));
     }
 
     @Override

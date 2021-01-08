@@ -1,27 +1,30 @@
 package com.sms.be.service.batchjob;
 
 import com.sms.be.constant.BookingStatus;
+import com.sms.be.constant.CommonConstants;
 import com.sms.be.dto.MailDto;
 import com.sms.be.model.Booking;
 import com.sms.be.model.Setting;
 import com.sms.be.repository.BookingRepository;
 import com.sms.be.repository.SettingRepository;
 import com.sms.be.service.ClientService;
+import java.util.Base64;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -31,17 +34,9 @@ public class ScheduledJob {
     private final Logger LOGGER = LoggerFactory.getLogger(ScheduledJob.class);
 
     //TODO add these variable to setting table
-    private final long MAX_WAIT_TIME = 15L;
+    private final long TIME_TO_NOTIFY = 1;
 
-    private final long TIME_TO_NOTIFY = 15L;
-
-    private final long TIME_TO_CANCEL = 5L;
-
-    private final String ACCOUNT_SID = "AC4c1beab06610d0943ac42f8b7fb52052";
-
-    private final String AUTH_TOKEN = "c9704caf79eaf308da0867a9dde47420";
-
-    private final String FROM_PHONE_NUMBER = "+15615315690";
+    private final long TIME_TO_CANCEL = 1;
 
     @Autowired
     private BookingRepository bookingRepository;
@@ -52,13 +47,12 @@ public class ScheduledJob {
     @Autowired
     private SettingRepository settingRepository;
 
-    // run each 10m
     @Scheduled(initialDelay = 1000 ,fixedDelay = 1000 * 60 * TIME_TO_NOTIFY)
     public void notifyBooking() {
         LOGGER.info(" --------------- Notify to customer start --------------- ");
         List<Booking> bookingsToNotify = bookingRepository
-                .findByNotifiedIsFalseAndDateAndTimeBetween(LocalDate.now(), LocalTime.now().minusMinutes(60),
-                        LocalTime.now());
+                .findByNotifiedIsFalseAndDateAndTimeBetweenAndStatus(LocalDate.now(),
+                        LocalTime.now(), LocalTime.now().plusHours(2), BookingStatus.WAITING);
         bookingsToNotify.forEach(booking -> {
             booking.setNotified(true);
             sendSMS(booking);
@@ -71,17 +65,21 @@ public class ScheduledJob {
         LOGGER.info(" --------------- Notify to customer end --------------- ");
     }
 
-    // run each 5m
     @Scheduled(initialDelay = 1000, fixedDelay = 1000 * 60 * TIME_TO_CANCEL)
     public void cancelBooking() {
         LOGGER.info(" --------------- Cancel booking start --------------- ");
-        List<Booking> bookingsToCancel = bookingRepository.findByStatusAndDate(BookingStatus.WAITING, LocalDate.now());
+        final long MAX_WAIT_TIME = NumberUtils
+                .toLong(settingRepository.findFirstByKey("time.max.wait").map(Setting::getValue1).orElse("1"), 1L);
+        List<Booking> bookingsToCancel = bookingRepository
+                .findByStatusAndDateLessThanEqual(BookingStatus.WAITING, LocalDate.now());
         bookingsToCancel.stream()
-                .filter(booking -> ChronoUnit.MINUTES.between(booking.getTime(), LocalTime.now()) >= MAX_WAIT_TIME)
-                .forEach(booking -> {
-                    booking.setStatus(BookingStatus.CANCEL);
-                    sendMailInform(booking, "email.cancel");
-                });
+                .filter(booking -> ChronoUnit.MINUTES.between(booking.getTime(), LocalTime.now()) >= MAX_WAIT_TIME
+                        || booking.getDate().isBefore(LocalDate.now())).forEach(booking -> {
+            booking.setStatus(BookingStatus.CANCEL);
+            if (Objects.nonNull(booking.getCustomer())) {
+                sendMailInform(booking, "email.cancel");
+            }
+        });
 
         LOGGER.info(" --------------- Cancel booking end --------------- ");
     }
@@ -91,7 +89,6 @@ public class ScheduledJob {
         clientService.sendMail(mailDto);
     }
 
-    @GetMapping("send-sms")
     public void sendSMS(Booking booking) {
         String salonAddress = String
                 .join(", ", booking.getSalon().getStreet(), booking.getSalon().getDistrict().getName(),
@@ -104,9 +101,10 @@ public class ScheduledJob {
                         + ", vui lòng đến trước thời gian đặt 15 phút");
         //TODO remove hardcode after upgrade send SMS service
         String toNumber = "+84" + booking.getCustomer().getPhoneNumber();
-        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+        Twilio.init(CommonConstants.ACCOUNT_SID, new String(Base64.getDecoder().decode(CommonConstants.AUTH_TOKEN))
+                .replace(CommonConstants.CODE, CommonConstants.EMPTY));
         Message.creator(new PhoneNumber(toNumber), // to
-                new PhoneNumber(FROM_PHONE_NUMBER), // from
+                new PhoneNumber(CommonConstants.FROM_PHONE_NUMBER), // from
                 smsBody).create();
     }
 }

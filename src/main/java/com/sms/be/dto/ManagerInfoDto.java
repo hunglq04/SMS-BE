@@ -1,11 +1,13 @@
 package com.sms.be.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@Builder
 public class ManagerInfoDto {
     private Long id;
     private String name;

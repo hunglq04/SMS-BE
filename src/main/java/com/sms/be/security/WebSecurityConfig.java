@@ -63,6 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/login/social").permitAll()
                 .antMatchers("/api/register").permitAll()
                 .antMatchers("/api/client/**").permitAll()
+                .antMatchers("/api/zp-integrate/**").permitAll()
                 .anyRequest().authenticated();
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
@@ -76,7 +77,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(ImmutableList.of("http://localhost:4200","http://localhost:4444",
+        configuration.setAllowedOrigins(ImmutableList.of("http://localhost:4200", "http://localhost:4444",
+                "https://localhost:4200", "https://localhost:4444",
                 "https://sms-fe.web.app", "https://sms-fe.firebaseapp.com",
                 "https://v-barbershop.web.app", "https://v-barbershop.firebaseapp.com"));
         configuration.setAllowedMethods(ImmutableList.of("HEAD",

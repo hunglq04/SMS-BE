@@ -3,27 +3,51 @@ package com.sms.be.controller;
 import com.sms.be.dto.ManagerInfoDto;
 import com.sms.be.dto.RatingImageDto;
 import com.sms.be.dto.SalonStatisticDto;
-import com.sms.be.dto.request.ProductRequest;
 import com.sms.be.dto.request.BookingRequest;
+import com.sms.be.dto.request.ProductRequest;
 import com.sms.be.dto.request.SalonRequest;
 import com.sms.be.dto.request.ServiceRequest;
+import com.sms.be.dto.response.BillResponse;
+import com.sms.be.dto.response.BookingResponse;
+import com.sms.be.dto.response.EmployeeResponse;
+import com.sms.be.dto.response.OrderResponse;
+import com.sms.be.dto.response.ProductResponse;
+import com.sms.be.dto.response.ProductTypeReponse;
+import com.sms.be.dto.response.SalonInternalResponse;
+import com.sms.be.dto.response.SalonResponse;
+import com.sms.be.dto.response.ServiceBookingResponse;
+import com.sms.be.dto.response.ServiceTypeResponse;
+import com.sms.be.dto.response.StylistSchedulerResponse;
 import com.sms.be.dto.response.*;
 import com.sms.be.model.Product;
+import com.sms.be.model.Salon;
 import com.sms.be.model.Service;
 import com.sms.be.service.InternalService;
-import com.sms.be.service.core.*;
+import com.sms.be.service.core.BookingService;
+import com.sms.be.service.core.EmployeeService;
+import com.sms.be.service.core.OrderService;
+import com.sms.be.service.core.ProductService;
+import com.sms.be.service.core.ProductTypeService;
+import com.sms.be.service.core.SalonService;
+import com.sms.be.service.core.ServiceService;
+import com.sms.be.service.core.ServiceTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/internal")
@@ -68,6 +92,19 @@ public class InternalController {
     public ResponseEntity<Void> addSalon(@Valid @RequestBody SalonRequest request) {
         salonService.addNewSalon(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/salon/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> updateSalon(@Valid @RequestBody SalonRequest request, @PathVariable(name = "id") Long id) {
+        salonService.updateSalon(request, id);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/salon/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<SalonInfoResponse> getSalonInfo(@PathVariable(name = "id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(salonService.getSalonInfo(id));
     }
 
     @GetMapping("/salon")
@@ -181,8 +218,8 @@ public class InternalController {
 
     @PostMapping("/booking/{id}/invoice")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_CASHIER')")
-    public ResponseEntity<Long> invoice(@Valid @PathVariable(name = "id") Long bookingId) {
-        return ResponseEntity.ok().body(bookingService.invoice(bookingId));
+    public ResponseEntity<BillResponse> invoice(@Valid @PathVariable(name = "id") Long bookingId, boolean withZP) {
+        return ResponseEntity.ok().body(bookingService.invoice(bookingId, withZP));
     }
 
     @PostMapping("/booking/{id}/start")

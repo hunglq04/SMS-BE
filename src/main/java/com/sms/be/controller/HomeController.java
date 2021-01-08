@@ -1,5 +1,6 @@
 package com.sms.be.controller;
 
+import com.sms.be.constant.CommonConstants;
 import com.sms.be.dto.AccountDto;
 import com.sms.be.dto.MailDto;
 import com.sms.be.dto.request.RegisterRequest;
@@ -10,15 +11,20 @@ import com.sms.be.exception.ProvinceNotFoundException;
 import com.sms.be.model.Account;
 import com.sms.be.model.Customer;
 import com.sms.be.model.Employee;
+import com.sms.be.model.Setting;
 import com.sms.be.repository.AccountRepository;
 import com.sms.be.repository.CustomerRepository;
 import com.sms.be.repository.EmployeeRepository;
+import com.sms.be.repository.SettingRepository;
 import com.sms.be.security.CustomUserDetails;
 import com.sms.be.security.JwtTokenProvider;
 import com.sms.be.service.ClientService;
 import com.sms.be.service.core.AccountService;
 import com.sms.be.service.core.DistrictService;
 import com.sms.be.service.core.ProvinceService;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,10 +34,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -96,6 +108,40 @@ public class HomeController {
     public ResponseEntity<Void> sendMail(@Valid @RequestBody MailDto request) {
         clientService.sendMail(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/send-sms")
+    public ResponseEntity<Void> sendSMS(String toNumber, String content) {
+            Twilio.init(CommonConstants.ACCOUNT_SID, new String(Base64.getDecoder().decode(CommonConstants.AUTH_TOKEN))
+                    .replace(CommonConstants.CODE, CommonConstants.EMPTY));
+            Message.creator(new PhoneNumber(toNumber), // to
+                    new PhoneNumber(CommonConstants.FROM_PHONE_NUMBER), // from
+                    content).create();
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/check-local-datetime")
+    public ResponseEntity<String> checkLocalDateTime() {
+        return ResponseEntity.ok(LocalDateTime.now().toString());
+    }
+
+    @Autowired
+    private SettingRepository settingRepository;
+
+    @GetMapping("/setting/{key}")
+    public String getSetting(@PathVariable(value = "key") String key) {
+        Setting setting = settingRepository.findFirstByKey(key)
+                .orElseThrow(() -> new IllegalArgumentException("Key không hợp lệ"));
+        return setting.getValue1();
+    }
+
+    @PostMapping("/setting/{key}")
+    public String updateSetting(@PathVariable(value = "key") String key, String value) {
+        Setting setting = settingRepository.findFirstByKey(key)
+                .orElseThrow(() -> new IllegalArgumentException("Key không hợp lệ"));
+        setting.setValue1(value);
+        settingRepository.save(setting);
+        return setting.getValue1() + " - cập nhật thành công";
     }
 
     private ResponseEntity<LoginResponse> authenticateAccount(@RequestBody @Valid AccountDto accountDto) {

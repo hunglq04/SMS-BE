@@ -2,6 +2,7 @@ package com.sms.be.utils;
 
 import com.sms.be.constant.CommonConstants;
 import com.sms.be.constant.ErrorMessage;
+import com.sms.be.dto.ManagerInfoDto;
 import com.sms.be.dto.response.*;
 import com.sms.be.model.*;
 import org.apache.commons.lang3.ObjectUtils;
@@ -54,6 +55,7 @@ public class MapperUtils {
                 .id(service.getId())
                 .name(service.getName())
                 .description(service.getDescription())
+                .descriptionImage(service.getDescriptionImage())
                 .bookingImage(service.getBookingImage())
                 .bookingRecommendImage(service.getBookingRecommendImage())
                 .isRecommend(service.isRecommend())
@@ -86,7 +88,7 @@ public class MapperUtils {
         salonResponse.setServices(new ArrayList<>());
         return salonResponse;
     }
-
+    
     public static EmployeeResponse employeeToEmployeeResponse(Employee employee)
     {
         return EmployeeResponse.builder()
@@ -159,6 +161,7 @@ public class MapperUtils {
                 .email(customer.getEmail())
                 .phone(customer.getPhoneNumber())
                 .name(customer.getName())
+                .address(customer.getAddress())
                 .build();
     }
 
@@ -186,6 +189,31 @@ public class MapperUtils {
                 .reduce(Integer::sum).orElse(0);
         scheduler.setEnd(booking.getDate().toString() + "T" + booking.getTime().plusMinutes(duration).toString());
         return scheduler;
+    }
+
+    public static SalonInfoResponse salonToSalonInfoResponse(Salon salon) {
+        return SalonInfoResponse.builder()
+                .id(salon.getId())
+                .managerInfoDto(employeeToManagerInfo(salon.getManager()))
+                .street(salon.getStreet())
+                .image(salon.getImage())
+                .provinceResponse(provinceToProvinceResponse(salon.getProvince()))
+                .districtResponse(districtToDistrictResponse(salon.getDistrict()))
+                .ward(salon.getWard().getName())
+                .build();
+    }
+
+    public static ManagerInfoDto employeeToManagerInfo(Employee employee) {
+        return ManagerInfoDto.builder()
+                .avatar(employee.getAvatar())
+                .id(employee.getId())
+                .idCard(employee.getIdCard())
+                .name(employee.getName())
+                .build();
+    }
+
+    public static ProvinceResponse provinceToProvinceResponse(Province province) {
+        return new ProvinceResponse(province.getId(), province.getName());
     }
 
 }
