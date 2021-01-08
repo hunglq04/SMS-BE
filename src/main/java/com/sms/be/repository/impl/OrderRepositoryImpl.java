@@ -28,6 +28,8 @@ public class OrderRepositoryImpl extends AbstractCustomQuery implements OrderRep
     public List<Order> findOrderHistoryByCustomer(Customer customer) {
         return new JPAQuery<>(entityManager).from(QOrder.order)
                 .where(QOrder.order.customer.eq(customer))
+                .orderBy(QOrder.order.dateTime.desc(),
+                        QOrder.order.status.desc())
                 .select(QOrder.order)
                 .fetch();
     }
@@ -75,7 +77,7 @@ public class OrderRepositoryImpl extends AbstractCustomQuery implements OrderRep
         return StringUtils.isBlank(date) ? result :
                 result.entrySet().stream().collect(Collectors
                         .toMap(e -> Year.of(LocalDate.parse(date).getYear()).atMonth(LocalDate.parse(date).getMonth())
-                                .atDay(e.getKey()).getDayOfWeek().getValue(), Map.Entry::getValue));
+                                .atDay(e.getKey()).getDayOfWeek().getValue(), Map.Entry::getValue, (x1, x2) -> x1));
     }
 
     @Override
