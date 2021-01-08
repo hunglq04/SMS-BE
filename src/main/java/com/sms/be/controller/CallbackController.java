@@ -52,6 +52,7 @@ public class CallbackController {
             } else {
                 // thanh toán thành công
                 // merchant cập nhật trạng thái cho đơn hàng
+                callbackSuccess();
                 JSONObject data = new JSONObject(dataStr);
                 logger.info("update order's status = success where apptransid = {}", data.getString("apptransid"));
 

@@ -63,6 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/login/social").permitAll()
                 .antMatchers("/api/register").permitAll()
                 .antMatchers("/api/client/**").permitAll()
+                .antMatchers("/api/zp-integrate/**").permitAll()
                 .anyRequest().authenticated();
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
