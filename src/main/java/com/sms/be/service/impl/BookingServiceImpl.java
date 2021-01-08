@@ -134,14 +134,16 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.deleteById(id);
     }
 
-    public BillResponse invoice(Long bookingId) {
+    public BillResponse invoice(Long bookingId, boolean withZP) {
         Account requester = SecurityUtils.getCurrentAccount();
         Employee cashier = employeeRepository.findByAccount(requester)
                 .orElseThrow(() -> new EmployeeNotFound("No Cashier found"));
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(BookingNotFoundException::new);
-        booking.setStatus(BookingStatus.DONE);
-        bookingRepository.save(booking);
+        if (!withZP) {
+            booking.setStatus(BookingStatus.DONE);
+            bookingRepository.save(booking);
+        }
         Bill bill = billRepository.findByBooking(booking).orElse(
                 Bill.builder()
                 .booking(booking)

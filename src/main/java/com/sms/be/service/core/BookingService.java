@@ -13,7 +13,7 @@ public interface BookingService {
     List<BookingResponse> getBookingHistoryByCustomer();
     Page<BookingResponse> getBookingPageByDateAndSalon(int pageSize, int pageOffset, String fromDate, Long salonId);
     void deleteBooking(Long id);
-    BillResponse invoice(Long bookingId);
+    BillResponse invoice(Long bookingId, boolean withZP);
     BookingResponse startProgress(Long bookingId);
     void finishProgress(Long bookingId, RatingImageDto images);
 }

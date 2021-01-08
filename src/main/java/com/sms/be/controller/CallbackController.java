@@ -1,8 +1,14 @@
 package com.sms.be.controller;
 
+import com.sms.be.constant.BookingStatus;
+import com.sms.be.exception.BookingNotFoundException;
+import com.sms.be.model.Booking;
+import com.sms.be.repository.BookingRepository;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -22,6 +28,9 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/api/zp-integrate")
 public class CallbackController {
+
+    @Autowired
+    private BookingRepository bookingRepository;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
     private String key2 = "uUfsWgfLkRLzq6W2uNXTCxrfxs51auny";
@@ -52,9 +61,13 @@ public class CallbackController {
             } else {
                 // thanh toán thành công
                 // merchant cập nhật trạng thái cho đơn hàng
-                callbackSuccess();
                 JSONObject data = new JSONObject(dataStr);
                 logger.info("update order's status = success where apptransid = {}", data.getString("apptransid"));
+                Long billId = NumberUtils.toLong(data.getString("apptransid").split("V-BARBERSHOP-BILL-")[1]);
+                Booking booking = bookingRepository.findById(billId).orElseThrow(BookingNotFoundException::new);
+                booking.setStatus(BookingStatus.DONE);
+                bookingRepository.save(booking);
+                callbackSuccess();
 
                 result.put("returncode", 1);
                 result.put("returnmessage", "success");

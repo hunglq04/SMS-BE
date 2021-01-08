@@ -218,8 +218,8 @@ public class InternalController {
 
     @PostMapping("/booking/{id}/invoice")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_CASHIER')")
-    public ResponseEntity<BillResponse> invoice(@Valid @PathVariable(name = "id") Long bookingId) {
-        return ResponseEntity.ok().body(bookingService.invoice(bookingId));
+    public ResponseEntity<BillResponse> invoice(@Valid @PathVariable(name = "id") Long bookingId, boolean withZP) {
+        return ResponseEntity.ok().body(bookingService.invoice(bookingId, withZP));
     }
 
     @PostMapping("/booking/{id}/start")
