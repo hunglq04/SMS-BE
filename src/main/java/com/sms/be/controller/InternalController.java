@@ -18,6 +18,10 @@ import com.sms.be.dto.response.SalonResponse;
 import com.sms.be.dto.response.ServiceBookingResponse;
 import com.sms.be.dto.response.ServiceTypeResponse;
 import com.sms.be.dto.response.StylistSchedulerResponse;
+import com.sms.be.dto.response.*;
+import com.sms.be.model.Product;
+import com.sms.be.model.Salon;
+import com.sms.be.model.Service;
 import com.sms.be.service.InternalService;
 import com.sms.be.service.core.BookingService;
 import com.sms.be.service.core.EmployeeService;
@@ -88,6 +92,19 @@ public class InternalController {
     public ResponseEntity<Void> addSalon(@Valid @RequestBody SalonRequest request) {
         salonService.addNewSalon(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/salon/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> updateSalon(@Valid @RequestBody SalonRequest request, @PathVariable(name = "id") Long id) {
+        salonService.updateSalon(request, id);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/salon/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<SalonInfoResponse> getSalonInfo(@PathVariable(name = "id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(salonService.getSalonInfo(id));
     }
 
     @GetMapping("/salon")

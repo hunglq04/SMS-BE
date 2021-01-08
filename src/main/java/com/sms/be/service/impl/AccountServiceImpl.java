@@ -89,6 +89,7 @@ public class AccountServiceImpl implements AccountService {
     private void createCustomer(RegisterRequest request, Account account) {
         String email = request.getUsername().contains("@") ? request.getUsername() : null;
         Customer customer = Customer.builder().account(account)
+                .email(request.getUsername())
                 .address(request.getAddress()).email(email)
                 .name(request.getName()).phoneNumber(request.getPhone())
                 .build();
