@@ -2,7 +2,9 @@ package com.sms.be.controller;
 
 import com.sms.be.constant.BookingStatus;
 import com.sms.be.exception.BookingNotFoundException;
+import com.sms.be.model.Bill;
 import com.sms.be.model.Booking;
+import com.sms.be.repository.BillRepository;
 import com.sms.be.repository.BookingRepository;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
@@ -32,6 +34,9 @@ public class CallbackController {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private BillRepository billRepository;
 
     @Value("${fcm.token}")
     private String fcmToken;
@@ -68,7 +73,8 @@ public class CallbackController {
                 JSONObject data = new JSONObject(dataStr);
                 logger.info("update order's status = success where apptransid = {}", data.getString("apptransid"));
                 Long billId = NumberUtils.toLong(data.getString("apptransid").split("V-BARBERSHOP-BILL-")[1]);
-                Booking booking = bookingRepository.findById(billId).orElseThrow(BookingNotFoundException::new);
+                Booking booking = billRepository.findById(billId).map(Bill::getBooking)
+                        .orElseThrow(BookingNotFoundException::new);
                 booking.setStatus(BookingStatus.DONE);
                 bookingRepository.save(booking);
                 callbackSuccess();
