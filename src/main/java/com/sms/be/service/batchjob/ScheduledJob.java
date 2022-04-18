@@ -47,7 +47,7 @@ public class ScheduledJob {
     @Autowired
     private SettingRepository settingRepository;
 
-    @Scheduled(initialDelay = 1000 ,fixedDelay = 1000 * 60 * TIME_TO_NOTIFY)
+//    @Scheduled(initialDelay = 1000 ,fixedDelay = 1000 * 60 * TIME_TO_NOTIFY)
     public void notifyBooking() {
         LOGGER.info(" --------------- Notify to customer start --------------- ");
         List<Booking> bookingsToNotify = bookingRepository
@@ -65,7 +65,7 @@ public class ScheduledJob {
         LOGGER.info(" --------------- Notify to customer end --------------- ");
     }
 
-    @Scheduled(initialDelay = 1000, fixedDelay = 1000 * 60 * TIME_TO_CANCEL)
+//    @Scheduled(initialDelay = 1000, fixedDelay = 1000 * 60 * TIME_TO_CANCEL)
     public void cancelBooking() {
         LOGGER.info(" --------------- Cancel booking start --------------- ");
         final long MAX_WAIT_TIME = NumberUtils

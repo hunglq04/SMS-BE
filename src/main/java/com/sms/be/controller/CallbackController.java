@@ -52,6 +52,7 @@ public class CallbackController {
 
     @PostMapping("/callback")
     public String callback(@RequestBody String jsonStr) {
+        logger.info("Callback start......");
         JSONObject result = new JSONObject();
 
         try {
@@ -85,8 +86,9 @@ public class CallbackController {
         } catch (Exception ex) {
             result.put("returncode", 0); // ZaloPay server sẽ callback lại (tối đa 3 lần)
             result.put("returnmessage", ex.getMessage());
+            logger.info("Callback error......");
         }
-
+        logger.info("Callback end......");
         // thông báo kết quả cho ZaloPay server
         return result.toString();
     }
@@ -95,8 +97,8 @@ public class CallbackController {
     public ResponseEntity<Void> callbackSuccess() {
         JSONObject personJsonObject = new JSONObject();
         personJsonObject.put("notification", new HashMap<String, String>(){{
-            put("title", "paid");
-            put("body", "Đã thanh toán!");
+            put("title", "Test title");
+            put("body", "Test body");
         }});
         return pushNotificationTemplate(personJsonObject);
     }
